@@ -1,9 +1,8 @@
-
-
+package management.interfacesFiles;
 import management.exceptions.InvalidSNodeException;
 
-public interface VirtualDiskInspectionInterface{
-	
+public interface VirtualDiskInspectionInterface {
+    	
 	/**
      * Metodo que obtem as informacoes de um SNode adiciona nova entrada (diretorio) em um diretorio existente
      * @param snodeId - identiticador do SNode alvo da operacao

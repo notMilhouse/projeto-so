@@ -1,34 +1,39 @@
 package model;
 
+import model.SNode.SNodeDir;
+import model.SNode.SNodeFile;
+
 public class DEntry {
-    private SNode sNode;
+    private SNodeDir sNode;
     private short entryLength;
     private FileType fileType;
     private String fileName;
 
-    
-    /**
-     *              SNode[] | BitMap   | DataBlock[] | BitMap  => Memória Fisica 
-     * 
-     * 
-     *              DEntry.SNode
-     * 
-     * 
-     *              SE Nova entrada for um diretorio 
-     *                  SNode.DEntrys[]  -> aponta para o subdiretorio/arqiovp = 1 bloco 
-     *              Se a entrada for um arquivo
-     *                  SNode.ArryList<bytes>  = 1 - 4 blocos de 128 bytes 
-     * 
-     */
+    private int size; 
 
-    DEntry( SNode snode, short entryLength, FileType fileType, String fileName ) {
+    DEntry( SNodeDir snode, short entryLength, FileType fileType, String fileName ) {
         this.sNode = snode;
         this.entryLength = entryLength;
         this.fileType = fileType;
-        this.fileName = fileName;
-    }
     
-    public SNode getSNode() {
-        return sNode;
+
+        if(fileName.length()< 122){
+            this.fileName = fileName;
+        }else { 
+            //TODO pensar ainda na excessão do problema 
+        }
+
+
+        this.size = 6 + fileName.length(); //size será o tamanho da estrutura DEntry 
+        //pensando que a soma das estruturas deve ser menor que 128 
+
     }
+
+    public int getSize(){
+        return this.size;
+    }
+
+    
+
+
 }

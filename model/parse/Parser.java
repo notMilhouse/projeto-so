@@ -1,4 +1,4 @@
-package model;
+package model.parse;
 public class Parser
 {
     File disk;

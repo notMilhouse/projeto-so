@@ -1,4 +1,4 @@
-package model;
+package model.parse;
 import java.util.*;
 public class CMDParser
 {

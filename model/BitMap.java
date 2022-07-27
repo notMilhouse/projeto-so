@@ -4,43 +4,37 @@ public class BitMap {
     private byte[][] bitMap;
 
     BitMap(int M) {
-        this.bitMap[][] = {{0}};
+        this.bitMap = new byte[M/8][8];
+
+        //TODO pensar em uma forma de inicializar o bitMap com todos valores zerados 
     }
 
-/** 
- * M/8
-    (byte)10100010 011100011 10001001 
-     [0][1]=1
-     [0][2]=0
-     [0][3]=1
-       . 
-       .
-       .
-     [0][8]=0
-     [1][0]=0 
-     [1][8] 
-*/
-
-    public boolean searchFreeSpaceInVector(){
-    }
 
     public boolean insertNode(int position){
+
+        int slot = (int) position/8  ;
+        int positionInSlot = Math.abs(position - 8 * slot);
+
+        if( bitMap[slot][positionInSlot] == 1)
+            return false;  
+        else {
+            bitMap[slot][positionInSlot] = 1;
+            return true;
+        }
     }
 
 
     public boolean removeNode(int position){   
+        int slot = (int) position/8  ;
+        int positionInSlot = Math.abs(position - 8 * slot);
+
+        if( bitMap[slot][positionInSlot] == 0)
+            return false;  
+        else {
+            bitMap[slot][positionInSlot] = 0;
+            return true;
+        }
     }
-
-    
-    private int validatePositionInVector(int position){    
-    }
-    
-
-    private byte[] convertBitMapInArrayOfBytes(){
-
-    }
-
-
 
 
 
