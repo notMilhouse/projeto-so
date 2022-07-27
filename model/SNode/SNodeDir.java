@@ -26,12 +26,12 @@ public class SNodeDir extends SNodeBase {
         else { 
             return false; 
         }
-        
-        //Necessário visualizar se o DEntry cabe denttro do SNodeDir < 128. 
-
 
     }
 
+    public boolean removeDEntry(){
+        //remoção de um DEntry 
+    }
 
 
 }
