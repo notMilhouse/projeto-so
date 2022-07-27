@@ -1,0 +1,8 @@
+addFile / A regular 500
+addFile / B block_device 128
+addDir / C
+addFile /C E regular 301
+delete / A
+addDir /C G
+addDir /C/G H
+addFile /C/G/H I fifo 350
