@@ -96,12 +96,13 @@ public class Parser
 
     public int ByteArrayToInt(byte[] byteArray)
     {
-        ByteBuffer wrapper;
-        return 0;
+        ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
+        return wrapper.getInt();
     }
     public int ByteArrayToShort(byte[] byteArray)
     {
-        ByteBuffer wrapper;
-        return 0;
+        ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
+        short ShortValue = wrapper.getShort();
+        return ShortValue >= 0? ShortValue : 0x10000 + ShortValue;
     }
 }
