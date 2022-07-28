@@ -5,15 +5,14 @@ public class BitMap {
 
     BitMap(int M) {
         this.bitMap = new byte[M/8];
-
-    
-        //TODO refazer utilizando string 
-
-
     }
 
 
-    public boolean insertNode(int position){
+    public boolean insertNode(int position) {
+
+        //next fit
+
+        MapSlot slot = findSlot();
 
         int slot = (int) position/8  ;
         int positionInSlot = Math.abs(position - 8 * slot);
@@ -45,10 +44,17 @@ public class BitMap {
      * retorna o arry de bytes que representa o bitmap
      * @return vetor do BitMap 
      */
-    public byte[][] getBitMap(){
+    public byte[] getBitMap(){
         return bitMap;
     }
 
+    public MapSlot findSlot() {
+        String map = bitMap.toString();
+    }
 
+    class MapSlot {
+        public int octople;
+        public int shift;
+    }
 
 }

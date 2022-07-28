@@ -29,6 +29,8 @@ public class DEntry {
 
         this.fileName = fileName; 
         //TODO O size tem que arredondar para proxima potencia de 2
+
+    
         this.size = 6 + fileName.length(); //size será o tamanho da estrutura DEntry. O tamanho máximo do DEntry deve ser menor que 128 bytes 
         
 

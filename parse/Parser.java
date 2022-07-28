@@ -84,7 +84,8 @@ public class Parser
                 //Instanciar DEntry
                 snode = new SNodeDir();
                 long position = diskAccess.getFilePointer();
-                while(diskAccess.getFilePointer() < position + length)
+                //tenho q arrumar isso daqui, está errado
+                while(diskAccess.getFilePointer() < position + length) //TODO Ver se esse while faz sentido
                 {
                     DEntry dEntry = ParseDir(diskAccess.readUnsignedShort());
                     snode.InsertDEntry(dEntry); //Erro de intellisense
@@ -92,6 +93,7 @@ public class Parser
             }
             else
             {
+
                 snode = new SNodeFile(type, length);
             }
         }
@@ -122,23 +124,25 @@ public class Parser
             FileName            n bytes
         */
 
+        //Da pra simplificar isso daqui..
         diskAccess.seek(atRef);
         int snodeRef = diskAccess.readUnsignedShort();
         atRef = (int) diskAccess.getFilePointer();
         SNode snode = ParseSNode(snodeRef);
         diskAccess.seek(atRef);
 
+        //Montar DEntry
         int EntryLength = diskAccess.readUnsignedShort();
         FileType type = FileType.parseFileType(diskAccess.readByte());
         int filenameLength = diskAccess.readUnsignedByte();
         byte[] tempBuffer = new byte[filenameLength];
         diskAccess.readFully(tempBuffer);
         String filename = new String(tempBuffer, "ISO-8859-1"); //Latin 8 bit charset
+
         DEntry dEntry = new DEntry(snode, EntryLength, type, filename);
 
-        diskAccess.seek(atRef - 2 + EntryLength);
+        diskAccess.seek(atRef - 2 + EntryLength);   //Vai para o final do DEntry
 
-        //Montar DEntry
         return dEntry;
     }
     /*
