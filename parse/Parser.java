@@ -56,10 +56,10 @@ public class Parser
     */
     public SNodeBase ParseSNode(int atRef)
     {
-        ByteBuffer wrapper;
+        
         try
         {
-            int type = wrapper.wrap(ReadBytes(2)).getInt();
+            int type = ReadBytes(2);
         }
         catch(Exception err)
         {
@@ -77,6 +77,7 @@ public class Parser
 
         return SNodeBase snode;    
     }
+
     public DEntry ParseDir(int atRef)
     {
 
@@ -95,10 +96,12 @@ public class Parser
 
     public int ByteArrayToInt(byte[] byteArray)
     {
+        ByteBuffer wrapper;
         return 0;
     }
-    public short ByteArrayToShort(byte[] byteArray)
+    public int ByteArrayToShort(byte[] byteArray)
     {
+        ByteBuffer wrapper;
         return 0;
     }
 }
