@@ -1,5 +1,6 @@
 package parse;
 
+import management.exceptions.*;
 import model.*;
 import model.SNode.*;
 import java.io.*;
@@ -8,9 +9,10 @@ import java.nio.ByteBuffer;
 public class Parser
 {
     File disk;
-    FileInputStream diskIn;
-    FileOutputStream diskOut;
-    SNodeBase root;
+    RandomAccessFile diskAccess;
+    //FileInputStream diskIn;
+    //FileOutputStream diskOut;
+    SNode root;
 
     int NumberOfSnodes;
     int NumberOfDatablocks;
@@ -26,9 +28,9 @@ public class Parser
     {
         try
         {
-            diskIn = new FileInputStream(disk);
+            diskAccess = new RandomAccessFile(disk, "r");
             root = ParseSNode(0);
-            diskIn.close();
+            diskAccess.close();
         }
         catch(Exception err)
         {
@@ -41,9 +43,9 @@ public class Parser
     {
         try
         {
-            diskOut = new FileOutputStream(disk);
+            diskAccess = new RandomAccessFile(disk, "w");
             //Persiste no arquivo
-            diskOut.close();
+            diskAccess.close();
         }
         catch(Exception err)
         {
@@ -54,16 +56,49 @@ public class Parser
     /**
     *
     */
-    public SNodeBase ParseSNode(int atRef)
+    public SNode ParseSNode(int atRef)
     {
-        
+        /*
+            Snode builder
+            Type: 1 byte
+            generation:     1 byte
+            creationDate    8 bytes
+            creationDate    8 bytes
+            length          2 bytes
+            DataBlockRef1   2 bytes (unsigned)
+            DataBlockRef2   2 bytes (unsigned)
+            DataBlockRef3   2 bytes (unsigned)
+            DataBlockRef4   2 bytes (unsigned)
+        */
+        SNode snode;
         try
         {
-            int type = ReadBytes(2);
+            diskAccess.seek(atRef);
+            FileType type = FileType.parseFileType(diskAccess.readByte());
+            byte generation = diskAccess.readByte();
+            long creationDate = diskAccess.readLong();
+            long modificationDate = diskAccess.readLong();
+            short length = diskAccess.readShort();
+            if(type == FileType.Directory)
+            {
+                //Instanciar DEntry
+                snode = new SNodeDir();
+                long position = diskAccess.getFilePointer();
+                while(diskAccess.getFilePointer() < position + length)
+                {
+                    DEntry dEntry = ParseDir(diskAccess.readUnsignedShort());
+                    snode.InsertDEntry(dEntry); //Erro de intellisense
+                }
+            }
+            else
+            {
+                snode = new SNodeFile(type, length);
+            }
         }
         catch(Exception err)
         {
             System.err.println(err);
+            return null;
         }
 
         //Montar SNode
@@ -73,36 +108,68 @@ public class Parser
         creationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()).toInstant().toEpochMilli(); //tempo de criação do SNode  
         modificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()).toInstant().toEpochMilli();
         */
-
-
-        return SNodeBase snode;    
+        return snode;    
     }
 
-    public DEntry ParseDir(int atRef)
+    public DEntry ParseDir(int atRef) throws IOException, InvalidEntryException
     {
+        /*
+            DEntry Builder
+            SNode Identifier:   2 bytes (unsigned)
+            EntryLength:        2 bytes (unsigned)
+            Filetype:           1 bytes
+            FileNameLength      1 bytes (min 1 max 122): n
+            FileName            n bytes
+        */
 
-        SNode node = ParseSNode(ref);
+        diskAccess.seek(atRef);
+        int snodeRef = diskAccess.readUnsignedShort();
+        atRef = (int) diskAccess.getFilePointer();
+        SNode snode = ParseSNode(snodeRef);
+        diskAccess.seek(atRef);
+
+        int EntryLength = diskAccess.readUnsignedShort();
+        FileType type = FileType.parseFileType(diskAccess.readByte());
+        int filenameLength = diskAccess.readUnsignedByte();
+        byte[] tempBuffer = new byte[filenameLength];
+        diskAccess.readFully(tempBuffer);
+        String filename = new String(tempBuffer, "ISO-8859-1"); //Latin 8 bit charset
+        DEntry dEntry = new DEntry(snode, EntryLength, type, filename);
+
+        diskAccess.seek(atRef - 2 + EntryLength);
+
         //Montar DEntry
-        return DEntry;
+        return dEntry;
     }
-
+    /*
     public byte[] ReadBytes(int numberOfBytes)
     throws IOException
     {
         byte[] byteArray = new byte[numberOfBytes];
-        diskIn.read(byteArray, 0, numberOfBytes);
+        diskAccess.read(byteArray, 0, numberOfBytes);
         return byteArray;
     }
 
+    public long ByteArrayToLong(byte[] byteArray)
+    {
+        ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
+        return wrapper.getLong();
+    }
     public int ByteArrayToInt(byte[] byteArray)
     {
         ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
         return wrapper.getInt();
     }
-    public int ByteArrayToShort(byte[] byteArray)
+    public int ByteArrayToUnsignedShort(byte[] byteArray)
     {
         ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
         short ShortValue = wrapper.getShort();
         return ShortValue >= 0? ShortValue : 0x10000 + ShortValue;
     }
+    public short ByteArrayToShort(byte[] byteArray)
+    {
+        ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
+        return wrapper.getShort();
+    }
+    */
 }

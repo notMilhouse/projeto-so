@@ -1,12 +1,15 @@
 package model;
 
 public class BitMap {
-    private byte[][] bitMap;
+    private byte[] bitMap;
 
     BitMap(int M) {
-        this.bitMap = new byte[M/8][8];
+        this.bitMap = new byte[M/8];
 
-        //TODO pensar em uma forma de inicializar o bitMap com todos valores zerados 
+    
+        //TODO refazer utilizando string 
+
+
     }
 
 

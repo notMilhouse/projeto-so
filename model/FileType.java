@@ -11,6 +11,7 @@ public enum FileType {
     SymbolicLink                (new Byte("0b00000111"));
 
     private final Byte fileType;
+
     private FileType(Byte fileType) {
         this.fileType = fileType;
     }
@@ -51,15 +52,15 @@ public enum FileType {
                 return Regular;
             case "directory":
                 return Directory;
-            case 0b00000011:
+            case "character_device":
                 return CharacterDevice;
-            case 0b00000100:
+            case "block_device":
                 return BlockDevice;
-            case 0b00000101:
+            case "fifo":
                 return Fifo;
-            case 0b00000110:
+            case "socket":
                 return Socket;
-            case 0b00000111:
+            case "symbolic_link":
                 return SymbolicLink;
             default:
                 return Unknown;

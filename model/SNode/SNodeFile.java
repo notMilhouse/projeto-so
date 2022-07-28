@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import model.FileType;
 
-public class SNodeFile extends SNodeBase {
+public class SNodeFile extends SNode {
 
     
     private ArrayList <byte[]> DataBlocks;
 
-    SNodeFile(FileType fileType, int length){
+    public SNodeFile(FileType fileType, int length){
         super(fileType, length);
 
         DataBlocks = new ArrayList<byte[]>();
