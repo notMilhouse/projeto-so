@@ -1,5 +1,6 @@
 package model;
 
+import management.exceptions.InvalidEntryException;
 import model.SNode.SNodeDir;
 import model.SNode.SNodeFile;
 
@@ -11,21 +12,24 @@ public class DEntry {
 
     private int size; 
 
-    DEntry( SNodeDir snode, short entryLength, FileType fileType, String fileName ) {
+    DEntry( SNodeDir snode, short entryLength, FileType fileType, String fileName ) 
+    throws InvalidEntryException
+    {
         this.sNode = snode;
         this.entryLength = entryLength;
         this.fileType = fileType;
     
 
-        if(fileName.length()< 122){
-            this.fileName = fileName;
-        }else { 
-            //TODO pensar ainda na excessão do problema 
+        if(fileName.length()> 122){
+            throw new InvalidEntryException("Nome do arquivo maior que o estipulado");
+            //TODO ver se InvalidEntryException retorna ou não 
         }
+                
 
+        this.fileName = fileName; 
+        this.size = 6 + fileName.length(); //size será o tamanho da estrutura DEntry. O tamanho máximo do DEntry deve ser menor que 128 bytes 
+        
 
-        this.size = 6 + fileName.length(); //size será o tamanho da estrutura DEntry 
-        //pensando que a soma das estruturas deve ser menor que 128 
 
     }
 
