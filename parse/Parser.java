@@ -60,7 +60,7 @@ public class Parser
     {
         /*
             Snode builder
-            Type: 1 byte
+            Type:           1 byte
             generation:     1 byte
             creationDate    8 bytes
             creationDate    8 bytes
@@ -74,42 +74,51 @@ public class Parser
         try
         {
             diskAccess.seek(atRef);
-            FileType type = FileType.parseFileType(diskAccess.readByte());
-            byte generation = diskAccess.readByte();
-            long creationDate = diskAccess.readLong();
-            long modificationDate = diskAccess.readLong();
-            short length = diskAccess.readShort();
+            FileType type = FileType.parseFileType(diskAccess.readByte());  //Reads [1]
+            byte generation = diskAccess.readByte();                        //Reads [1]
+            long creationDate = diskAccess.readLong();                      //Reads [8]
+            long modificationDate = diskAccess.readLong();                  //Reads [8]
+            short length = diskAccess.readShort();                          //Reads [2]
+            int dataBlockRef = diskAccess.readUnsignedShort();              //Reads [2]
+
+
             if(type == FileType.Directory)
             {
-                //Instanciar DEntry
                 snode = new SNodeDir();
                 long position = diskAccess.getFilePointer();
-                //tenho q arrumar isso daqui, está errado
+                diskAccess.seek(dataBlockRef);            
+
                 while(diskAccess.getFilePointer() < position + length) //TODO Ver se esse while faz sentido
                 {
-                    DEntry dEntry = ParseDir(diskAccess.readUnsignedShort());
+                    DEntry dEntry = ParseDir((int)diskAccess.getFilePointer());
                     snode.InsertDEntry(dEntry); //Erro de intellisense
                 }
             }
             else
             {
-
                 snode = new SNodeFile(type, length);
+                int nDataBlocks = snode.GetNumberOfDatablocks(); //Erro de intellisense
+                long position = diskAccess.getFilePointer();
+                for(int i = 0; i < nDataBlocks; i++)
+                {
+                    diskAccess.seek(dataBlockRef);
+                    diskAccess.readFully(snode.DataBlockByIndex(i)); //Erro de intellisense
+                    diskAccess.seek(position);
+                    dataBlockRef = diskAccess.readUnsignedShort();
+                    position = diskAccess.getFilePointer();
+                }
+
+
             }
+            snode.ChangeCreationDate(creationDate);
+            snode.ChangeModificationDate(modificationDate);
+            snode.ChangeGeneration(generation);
         }
         catch(Exception err)
         {
             System.err.println(err);
             return null;
         }
-
-        //Montar SNode
-        
-        /*
-        generation = 0;
-        creationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()).toInstant().toEpochMilli(); //tempo de criação do SNode  
-        modificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()).toInstant().toEpochMilli();
-        */
         return snode;    
     }
 
@@ -141,7 +150,7 @@ public class Parser
 
         DEntry dEntry = new DEntry(snode, EntryLength, type, filename);
 
-        diskAccess.seek(atRef - 2 + EntryLength);   //Vai para o final do DEntry
+        diskAccess.seek(atRef - 2 + EntryLength);   //Vai para o final do DEntry (should)
 
         return dEntry;
     }

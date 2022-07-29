@@ -27,7 +27,7 @@ public class SNodeDir extends SNode {
         this.DEntryList.add(dEntry); //inserção de um novo DEntry 
         this.FreeSpace+= dEntry.getSize();
 
-        setModificationDate();
+        UpdateModificationDate();
         
         
         return true;        

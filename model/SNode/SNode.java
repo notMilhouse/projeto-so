@@ -1,6 +1,7 @@
 package model.SNode;
 
 import java.sql.Time;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -30,15 +31,26 @@ public abstract class SNode {
 
     }
 
-    public void setModificationDate(){
+    public void UpdateModificationDate(){
         this.ModificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
     }
 
     /**
      * Carregando SNode
      */
-    public void ChangeCreationDate() {
+    public void ChangeCreationDate(long time) {
 
+        CreationDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
     }
+    public void ChangeModificationDate(long time) {
+        ModificationDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
+    }
+    public void ChangeGeneration(Byte generation) {
+        Generation = generation;
+    }
+
+
+
+    
 
 }

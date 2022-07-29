@@ -52,6 +52,16 @@ public class SNodeFile extends SNode {
     
     }
 
+    public byte[] DataBlockByIndex(int index)
+    {
+        return DataBlocks.get(index);
+    }
+
+    public int GetNumberOfDatablocks()
+    {
+        return DataBlocks.size();
+    }
+
     
 
 
