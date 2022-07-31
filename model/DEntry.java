@@ -13,6 +13,9 @@ public class DEntry {
 
     private int size; 
 
+
+
+
     public DEntry( SNode snode, int entryLength, FileType fileType, String fileName ) 
     throws InvalidEntryException
     {

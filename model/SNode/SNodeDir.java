@@ -17,7 +17,8 @@ public class SNodeDir extends SNode {
         this.FreeSpace = 128; //128 bytes disponíveis para armazenar os DEntrys 
     }
 
-    public boolean insertDEntry(DEntry dEntry)
+    @Override
+    public boolean InsertDEntry(DEntry dEntry)
     throws InvalidEntryException{
 
         if(dEntry.getSize()> FreeSpace){
@@ -32,8 +33,8 @@ public class SNodeDir extends SNode {
         
         return true;        
         
-
     }
+
 
 
     /**

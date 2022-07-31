@@ -16,7 +16,8 @@ public class Parser
 
     int NumberOfSnodes;
     int NumberOfDatablocks;
-
+    int SNodeBitmapRef;
+    int DatablockBitmapRef;
     Parser(File file, int numberOfSnodes, int numberOfDatablocks)
     {
         disk = file;
@@ -29,6 +30,13 @@ public class Parser
         try
         {
             diskAccess = new RandomAccessFile(disk, "r");
+
+            SNodeBitmapRef = 28*NumberOfSnodes; //Snode [28]bytes
+            DatablockBitmapRef = SNodeBitmapRef + NumberOfSnodes + NumberOfDatablocks*128; //Datablock 128 bytes
+
+            //Criar Bitmaps
+
+
             root = ParseSNode(0);
             diskAccess.close();
         }
@@ -81,12 +89,16 @@ public class Parser
             short length = diskAccess.readShort();                          //Reads [2]
             int dataBlockRef = diskAccess.readUnsignedShort();              //Reads [2]
 
+            int dataBlocksInBitmap[];
 
             if(type == FileType.Directory)
             {
                 snode = new SNodeDir();
                 long position = diskAccess.getFilePointer();
-                diskAccess.seek(dataBlockRef);            
+                diskAccess.seek(dataBlockRef);    
+
+                dataBlocksInBitmap = new int[1];       
+                dataBlocksInBitmap[0] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
 
                 while(diskAccess.getFilePointer() < position + length) //TODO Ver se esse while faz sentido
                 {
@@ -99,20 +111,30 @@ public class Parser
                 snode = new SNodeFile(type, length);
                 int nDataBlocks = snode.GetNumberOfDatablocks(); //Erro de intellisense
                 long position = diskAccess.getFilePointer();
+
+                dataBlocksInBitmap = new int[nDataBlocks];
+
+
                 for(int i = 0; i < nDataBlocks; i++)
                 {
+
+                    dataBlocksInBitmap[i] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
+
+
                     diskAccess.seek(dataBlockRef);
                     diskAccess.readFully(snode.DataBlockByIndex(i)); //Erro de intellisense
                     diskAccess.seek(position);
                     dataBlockRef = diskAccess.readUnsignedShort();
                     position = diskAccess.getFilePointer();
                 }
-
-
             }
             snode.ChangeCreationDate(creationDate);
             snode.ChangeModificationDate(modificationDate);
             snode.ChangeGeneration(generation);
+
+            int snodeIndexInBitmap = atRef/28;
+
+            snode.SetBitmap(snodeIndexInBitmap, dataBlocksInBitmap);
         }
         catch(Exception err)
         {

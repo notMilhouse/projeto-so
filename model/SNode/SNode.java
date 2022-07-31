@@ -1,10 +1,14 @@
 package model.SNode;
 
-import java.sql.Time;
+//import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
+
+import management.exceptions.InvalidEntryException;
+import model.DEntry;
 
 import model.BitMap;
 import model.FileType;
@@ -17,6 +21,10 @@ public abstract class SNode {
     protected ZonedDateTime CreationDate; // pra vermos isso depois
     protected ZonedDateTime ModificationDate;
     protected int Length;
+    protected int indexInBitMap; 
+    protected int[] datablocksInBitmap;    
+    
+
 
     /**
      * 
@@ -35,6 +43,18 @@ public abstract class SNode {
         this.ModificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
     }
 
+
+
+    public void SetBitmap(int snodeIndex, int[] dataBlocksIndexes)
+    {
+        indexInBitMap = snodeIndex;
+        datablocksInBitmap = dataBlocksIndexes;
+    }
+    
+
+    
+    
+    
     /**
      * Carregando SNode
      */
@@ -51,6 +71,24 @@ public abstract class SNode {
 
 
 
-    
+    //
+    public boolean InsertDEntry(DEntry dEntry)
+    throws InvalidEntryException{
+        return false;
+    }
+    public byte[] DataBlockByIndex(int index)
+    {
+        return null;
+    }
+
+    public int GetNumberOfDatablocks()
+    {
+        return -1;
+    }
+    //
+
+    public static void setBitMap(int numFiles) {
+    }
+
 
 }

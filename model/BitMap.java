@@ -5,14 +5,24 @@ public class BitMap {
 
     BitMap(int M) {
         this.bitMap = new byte[M/8];
+       
+        for (int b : bitMap) {  //inicialização com todos espaços disponíveis 
+            this.bitMap[b] = (byte)0;
+        }
+
+    
     }
 
-
+    BitMap(byte[] bitMap){
+        this.bitMap = bitMap;   //pegando o bitmap da memória
+    }
+    
+    
+    //next fit
     public boolean insertNode(int position) {
 
-        //next fit
 
-        MapSlot slot = findSlot();
+      
 
         int slot = (int) position/8  ;
         int positionInSlot = Math.abs(position - 8 * slot);
@@ -48,13 +58,11 @@ public class BitMap {
         return bitMap;
     }
 
+
+
     public MapSlot findSlot() {
         String map = bitMap.toString();
     }
 
-    class MapSlot {
-        public int octople;
-        public int shift;
-    }
 
 }
