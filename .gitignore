@@ -1,0 +1,4 @@
+*.class
+.idea/*
+out/*
+projeto-so.iml

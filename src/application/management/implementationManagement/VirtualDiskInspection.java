@@ -1,7 +1,7 @@
-package management.implementationManagement;
+package src.application.management.implementationManagement;
 
-import management.exceptions.InvalidSNodeException;
-import management.interfacesFiles.VirtualDiskInspectionInterface;
+import src.application.management.exceptions.InvalidSNodeException;
+import src.application.management.interfacesFiles.VirtualDiskInspectionInterface;
 
 public class VirtualDiskInspection implements VirtualDiskInspectionInterface{
 

@@ -1,8 +1,8 @@
-package management.interfacesFiles;
+package src.application.management.interfacesFiles;
 
-import management.exceptions.InvalidEntryException;
-import management.exceptions.VirtualFileNotFoundException;
-import model.*;
+import src.application.management.exceptions.InvalidEntryException;
+import src.application.management.exceptions.VirtualFileNotFoundException;
+import src.domain.snode.FileType;
 
 public interface FileManagementInterface{
 	
@@ -14,7 +14,7 @@ public interface FileManagementInterface{
      * @throws InvalidEntryException - se formato de pathname ou filename for invalido ou entrada for duplicada
 	 * @throws VirtualFileNotFoundException - se diretorio identificado por pathname nao for encontrado 
 	*/
-	public boolean addDirectory(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException;
+	boolean addDirectory(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException;
 	
 	/**
      * Metodo que adiciona nova entrada (arquivo) em um diretorio existente
@@ -25,7 +25,7 @@ public interface FileManagementInterface{
 	 * 		   tipo de arquivo for invalido (diretorio) ou tamanho do arquivo for invalido
 	 * @throws VirtualFileNotFoundException - se diretorio identificado por pathname nao for encontrado 
      */
-	 public boolean addFile(String pathname, String filename, FileType type, int length) throws InvalidEntryException, VirtualFileNotFoundException;
+	boolean addFile(String pathname, String filename, FileType type, int length) throws InvalidEntryException, VirtualFileNotFoundException;
 	// ATUALIZAR O MODIFICATION DATE DO DIRETORIO TODA VEZ QUE TIVER ALTERACAO
      // ATUALIZACAO PRO DIRETORIO PAI E FILHO
      // ATUALIZAR TAMANHO DO DIRETORIO
@@ -37,7 +37,7 @@ public interface FileManagementInterface{
      * @throws InvalidEntryException - se formato de pathname ou filename for invalido 
 	 * @throws VirtualFileNotFoundException - se diretorio ou filename identificado por pathname nao for encontrado 
      */
-	public boolean deleteFile(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException;
+	boolean deleteFile(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException;
 	// ATUALIZAR O MODIFICATION DATE DO DIRETORIO TODA VEZ QUE TIVER ALTERACAO
      // ATUALIZAR TAMANHO DO DIRETORIO
      
@@ -48,7 +48,7 @@ public interface FileManagementInterface{
      * @throws InvalidEntryException - se formato de pathname for invalido 
 	 * @throws VirtualFileNotFoundException - se diretorio identificado por pathname nao for encontrado 
      */
-	public String[] listDirectory(String pathname) throws InvalidEntryException, VirtualFileNotFoundException;
+	String[] listDirectory(String pathname) throws InvalidEntryException, VirtualFileNotFoundException;
 	
 	/**
      * Metodo que le um conjunto de comandos de gerenciamento do sistema de arquivos virtuais (no formato apropriado)   
@@ -56,11 +56,11 @@ public interface FileManagementInterface{
      * @param pathname - caminho do arquivo texto onde os comandos estao armazenados
      * @return true se arquivo de comandos for encontrado e processado, false se arquivo de comandos nao for encontrado 
      */
-	public boolean parseCommandFile(String pathname);
+	boolean parseCommandFile(String pathname);
 	
 	/**
      * Metodo que salva as estruturas do disco virtual em um arquivo binario    
      * @return true se operacao realizada com sucesso, false se erro durante a execucao da operacao 
-     */ 
-	public boolean saveVirtualDisk();
+     */
+	boolean saveVirtualDisk();
 }

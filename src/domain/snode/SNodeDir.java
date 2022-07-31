@@ -1,10 +1,9 @@
-package model.SNode;
+package src.domain.snode;
 import java.util.ArrayList;
 
-import management.exceptions.InvalidEntryException;
-import management.exceptions.VirtualFileNotFoundException;
-import model.DEntry;
-import model.FileType;
+import src.application.management.exceptions.InvalidEntryException;
+import src.application.management.exceptions.VirtualFileNotFoundException;
+import src.domain.snode.dentry.DEntry;
 
 public class SNodeDir extends SNode {
   

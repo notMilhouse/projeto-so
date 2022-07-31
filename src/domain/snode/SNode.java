@@ -1,4 +1,4 @@
-package model.SNode;
+package src.domain.snode;
 
 //import java.sql.Time;
 import java.time.Instant;
@@ -7,11 +7,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 
-import management.exceptions.InvalidEntryException;
-import model.DEntry;
+import src.application.management.exceptions.InvalidEntryException;
+import src.domain.snode.dentry.DEntry;
 
-import model.BitMap;
-import model.FileType;
+import src.domain.bitmap.BitMap;
 
 public abstract class SNode {
     protected static BitMap bitMap; // BitMap é uma estrutura a parte do SNode

@@ -1,8 +1,8 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+package src;
 
-import model.SNode.*; //TODO probleminhas aqui kkk
+import java.io.FileInputStream;
+
+import src.domain.snode.*; //TODO probleminhas aqui kkk
 
 public class FileManagerApplication {
     public static void main(String[] args) {

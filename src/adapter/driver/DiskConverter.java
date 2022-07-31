@@ -1,12 +1,18 @@
-package parse;
+package src.adapter.driver;
 
-import management.exceptions.*;
-import model.*;
-import model.SNode.*;
-import java.io.*;
-import java.nio.ByteBuffer;
+import src.application.management.exceptions.InvalidEntryException;
+import src.domain.snode.dentry.DEntry;
+import src.domain.snode.FileType;
+import src.domain.snode.SNode;
+import src.domain.snode.SNodeDir;
+import src.domain.snode.SNodeFile;
 
-public class Parser
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
+
+public class DiskConverter
 {
     File disk;
     RandomAccessFile diskAccess;
@@ -18,7 +24,7 @@ public class Parser
     int NumberOfDatablocks;
     int SNodeBitmapRef;
     int DatablockBitmapRef;
-    Parser(File file, int numberOfSnodes, int numberOfDatablocks)
+    DiskConverter(File file, int numberOfSnodes, int numberOfDatablocks)
     {
         disk = file;
         NumberOfSnodes = numberOfSnodes;
@@ -89,7 +95,7 @@ public class Parser
             short length = diskAccess.readShort();                          //Reads [2]
             int dataBlockRef = diskAccess.readUnsignedShort();              //Reads [2]
 
-            int dataBlocksInBitmap[];
+            int[] dataBlocksInBitmap;
 
             if(type == FileType.Directory)
             {
@@ -168,7 +174,7 @@ public class Parser
         int filenameLength = diskAccess.readUnsignedByte();
         byte[] tempBuffer = new byte[filenameLength];
         diskAccess.readFully(tempBuffer);
-        String filename = new String(tempBuffer, "ISO-8859-1"); //Latin 8 bit charset
+        String filename = new String(tempBuffer, StandardCharsets.ISO_8859_1); //Latin 8 bit charset
 
         DEntry dEntry = new DEntry(snode, EntryLength, type, filename);
 

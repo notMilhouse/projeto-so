@@ -1,13 +1,11 @@
-package model.SNode;
+package src.domain.snode;
 
 import java.util.ArrayList;
-
-import model.FileType;
 
 public class SNodeFile extends SNode {
 
     
-    private ArrayList <byte[]> DataBlocks;
+    private final ArrayList <byte[]> DataBlocks;
 
     public SNodeFile(FileType fileType, int length){
         super(fileType, length);

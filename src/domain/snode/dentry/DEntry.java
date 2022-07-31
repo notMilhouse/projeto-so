@@ -1,20 +1,16 @@
-package model;
+package src.domain.snode.dentry;
 
-import management.exceptions.InvalidEntryException;
-import model.SNode.SNode;
-import model.SNode.SNodeDir;
-import model.SNode.SNodeFile;
+import src.application.management.exceptions.InvalidEntryException;
+import src.domain.snode.FileType;
+import src.domain.snode.SNode;
 
 public class DEntry {
-    private SNode sNode; //isso pode ser tanto um snode de diretorio como de arquivo 
-    private int entryLength;
-    private FileType fileType;
-    private String fileName;
+    private final SNode sNode; //isso pode ser tanto um snode de diretorio como de arquivo
+    private final int entryLength;
+    private final FileType fileType;
+    private final String fileName;
 
-    private int size; 
-
-
-
+    private final int size;
 
     public DEntry( SNode snode, int entryLength, FileType fileType, String fileName ) 
     throws InvalidEntryException

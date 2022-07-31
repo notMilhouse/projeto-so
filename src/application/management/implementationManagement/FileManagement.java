@@ -1,8 +1,8 @@
-package management.implementationManagement;
-import management.exceptions.InvalidEntryException;
-import management.exceptions.VirtualFileNotFoundException;
-import management.interfacesFiles.FileManagementInterface;
-import model.FileType;
+package src.application.management.implementationManagement;
+import src.application.management.exceptions.InvalidEntryException;
+import src.application.management.exceptions.VirtualFileNotFoundException;
+import src.application.management.interfacesFiles.FileManagementInterface;
+import src.domain.snode.FileType;
 
 public class FileManagement implements FileManagementInterface {
 

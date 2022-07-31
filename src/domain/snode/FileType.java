@@ -1,4 +1,4 @@
-package model;
+package src.domain.snode;
   //enum dos FileTypes Ok 
 public enum FileType {
     Unknown                     (new Byte("0b00000000")),
@@ -12,7 +12,7 @@ public enum FileType {
 
     private final Byte fileType;
 
-    private FileType(Byte fileType) {
+    FileType(Byte fileType) {
         this.fileType = fileType;
     }
 
