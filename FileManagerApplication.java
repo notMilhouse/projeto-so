@@ -23,9 +23,5 @@ public class FileManagerApplication {
         SNode.setBitMap(numFiles);
         DataBlock.setBitMap(numDataBlocks);
 
-        
-
-
-
     }
 }
