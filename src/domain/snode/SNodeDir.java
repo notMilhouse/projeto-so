@@ -7,9 +7,8 @@ import src.domain.snode.dentry.DEntry;
 
 public class SNodeDir extends SNode {
   
-    ArrayList<DEntry> DEntryList;
-
-    int FreeSpace;
+    private ArrayList<DEntry> DEntryList;
+    private int FreeSpace;
 
     public SNodeDir(){
         super(FileType.Directory, 128); 
@@ -35,7 +34,6 @@ public class SNodeDir extends SNode {
     }
 
 
-
     /**
      * Remoção de um DEntry dentro do diretório 
      * @param nameFile
@@ -45,7 +43,7 @@ public class SNodeDir extends SNode {
        
         //remoção de um DEntry 
 
-        int index = searchDEntryList(nameFile);
+        int index = searchPositionInDEntryList(nameFile);
 
         if(index == -1) {
             throw new VirtualFileNotFoundException("arquivo não encontrado");
@@ -61,15 +59,33 @@ public class SNodeDir extends SNode {
      * @throws VirtualFileNotFoundException
      */
 
-    private int searchDEntryList(String nameFile) throws VirtualFileNotFoundException  {
+    private int searchPositionInDEntryList(String fileName) throws VirtualFileNotFoundException  {
       
         for(DEntry node : DEntryList){
-            if(node.getFileName() == nameFile){
+            if(node.getFileName() == fileName){
                 return DEntryList.indexOf(node);
             }
         }
 
         return -1; 
+
+    }
+
+    /**
+    *   Busca no diretorio por subdiretorios 
+    * @param fileName
+    * @return
+    */
+    public DEntry searchInDirectory(String fileName){//TODO tratar excessão 
+    
+        for (DEntry dentry : DEntryList) {
+            if(dentry.getFileName() == fileName){
+                return dentry;
+            }
+        }
+
+        return null;
+
 
     }
 

@@ -36,6 +36,10 @@ public class DEntry {
 
     }
 
+    public SNode getSNode(){
+        return this.sNode;
+    }
+
     public String getFileName(){
         return this.fileName;
     }

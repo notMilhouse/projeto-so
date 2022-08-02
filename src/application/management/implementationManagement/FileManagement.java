@@ -1,4 +1,5 @@
 package src.application.management.implementationManagement;
+import src.domain.snode.SNodeDir;
 import src.application.management.exceptions.InvalidEntryException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.application.management.interfacesFiles.FileManagementInterface;
@@ -6,12 +7,20 @@ import src.domain.snode.FileType;
 
 public class FileManagement implements FileManagementInterface {
 
+    
+
+
     @Override
     public boolean addDirectory(String pathname, String filename)
-            throws InvalidEntryException, VirtualFileNotFoundException {
-        // TODO Auto-generated method stub
+        throws InvalidEntryException, VirtualFileNotFoundException {
+         
+        
+            // TODO Auto-generated method stub
         return false;
     }
+
+
+
 
     @Override
     public boolean addFile(String pathname, String filename, FileType type, int length)
