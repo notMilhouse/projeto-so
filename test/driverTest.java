@@ -12,5 +12,14 @@ public class driverTest {
 
         DiskConverter driver = new DiskConverter(disk, N, M);
         driver.Read();
+
+
+
+        for(int i = 0; i < driver.GetRoot().numberOfFilesInDir(); i++)
+        {
+            System.out.println(driver.GetRoot().getDEntryAtIndex(i).getFileName());
+        }
+
     }
+
 }
