@@ -48,7 +48,7 @@ public class DiskConverter
             //Criar Bitmaps
             LoadBitmap();
 
-            //root = ParseSNode(0);
+            root = ParseSNode(0);
             diskAccess.close();
         }
         catch(Exception err)
@@ -134,7 +134,7 @@ public class DiskConverter
             {
                 snode = new SNodeDir();
                 long position = diskAccess.getFilePointer();
-                diskAccess.seek(dataBlockRef);    
+                diskAccess.seek(dataBlockRef + DatablockBitmapRef);    
 
                 dataBlocksInBitmap = new int[1];       
                 dataBlocksInBitmap[0] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
@@ -160,7 +160,7 @@ public class DiskConverter
                     dataBlocksInBitmap[i] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
 
 
-                    diskAccess.seek(dataBlockRef);
+                    diskAccess.seek(dataBlockRef + DatablockBitmapRef);
                     diskAccess.readFully(snode.DataBlockByIndex(i)); //Erro de intellisense
                     diskAccess.seek(position);
                     dataBlockRef = diskAccess.readUnsignedShort();
@@ -198,7 +198,7 @@ public class DiskConverter
         diskAccess.seek(atRef);
         int snodeRef = diskAccess.readUnsignedShort();
         atRef = (int) diskAccess.getFilePointer();
-        SNode snode = ParseSNode(snodeRef);
+        SNode snode = ParseSNode(snodeRef + SNodeBitmapRef);
         diskAccess.seek(atRef);
 
         //Montar DEntry
