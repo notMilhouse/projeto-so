@@ -5,6 +5,7 @@ import src.application.management.exceptions.InvalidEntryException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.dentry.DEntry;
 
+
 public class SNodeDir extends SNode {
   
     private ArrayList<DEntry> DEntryList;
@@ -76,7 +77,7 @@ public class SNodeDir extends SNode {
     * @param fileName
     * @return
     */
-    public DEntry searchInDirectory(String fileName){//TODO tratar excessão 
+    public DEntry searchInDirectory(String fileName) throws VirtualFileNotFoundException{//TODO tratar excessão 
     
         for (DEntry dentry : DEntryList) {
             if(dentry.getFileName() == fileName){
@@ -84,7 +85,9 @@ public class SNodeDir extends SNode {
             }
         }
 
-        return null;
+        throw new VirtualFileNotFoundException("diretório inexistente");
+
+
 
 
     }
