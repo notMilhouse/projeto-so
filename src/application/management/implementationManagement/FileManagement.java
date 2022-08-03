@@ -15,29 +15,37 @@ public class FileManagement implements FileManagementInterface {
     @Override
     public boolean addDirectory(String pathname, String filename)
         throws InvalidEntryException, VirtualFileNotFoundException {
-         
 
+           
+             boolean successfulOperation =  diskStruct.insertDirectory(pathName, snodeInsert, fileName);
+              
+             return successfulOperation;
 
-         
-
-            return false;
     }
-
-
 
 
     @Override
     public boolean addFile(String pathname, String filename, FileType type, int length)
-            throws InvalidEntryException, VirtualFileNotFoundException {
-        // TODO Auto-generated method stub
-        return false;
+        throws InvalidEntryException, VirtualFileNotFoundException {
+
+       
+        SNodeFile file = new SNodeFile(filename,length);
+        boolean successfulOperation =    diskStruct.insertFile(pathName, file, fileName);
+
+            
+
+     
+        return successfulOperation;
     }
 
     @Override
     public boolean deleteFile(String pathname, String filename)
             throws InvalidEntryException, VirtualFileNotFoundException {
-        // TODO Auto-generated method stub
-        return false;
+        
+        boolean successfulOperation = diskStruct.deleteFile(pathName, file);
+
+
+        return successfulOperation;
     }
 
     @Override
