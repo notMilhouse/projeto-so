@@ -1,14 +1,14 @@
 package src.domain.snode;
   //enum dos FileTypes Ok 
 public enum FileType {
-    Unknown                     ((byte)0),
-    Regular                     ((byte)1),
-    Directory                   ((byte)2),
-    CharacterDevice             ((byte)3),
-    BlockDevice                 ((byte)4),
-    Fifo                        ((byte)5),
-    Socket                      ((byte)6),
-    SymbolicLink                ((byte)7);
+    Unknown                     (Byte.parseByte("00000000")),
+    Regular                     (Byte.parseByte("00000001")),
+    Directory                   (Byte.parseByte("00000010")),
+    CharacterDevice             (Byte.parseByte("00000011")),
+    BlockDevice                 (Byte.parseByte("00000100")),
+    Fifo                        (Byte.parseByte("00000101")),
+    Socket                      (Byte.parseByte("00000110")),
+    SymbolicLink                (Byte.parseByte("00000111"));
 
     private final byte fileType;
 
@@ -26,44 +26,27 @@ public enum FileType {
     }
 
     public static FileType parseFileType(byte fileType) {
-        switch (fileType) {
-            case ((byte)1):
-                return Regular;
-            case ((byte)2):
-                return Directory;
-            case ((byte)3):
-                return CharacterDevice;
-            case ((byte)4):
-                return BlockDevice;
-            case ((byte)5):
-                return Fifo;
-            case ((byte)6):
-                return Socket;
-            case ((byte)7):
-                return SymbolicLink;
-            default:
-                return Unknown;
-        }
+        return switch (fileType) {
+            case 1 -> Regular;
+            case 2 -> Directory;
+            case 3 -> CharacterDevice;
+            case 4 -> BlockDevice;
+            case 5 -> Fifo;
+            case 6 -> Socket;
+            case 7 -> SymbolicLink;
+            default -> Unknown;
+        };
     }
-
     public static FileType parseFileType(String fileType) {
-        switch (fileType) {
-            case "regular":
-                return Regular;
-            case "directory":
-                return Directory;
-            case "character_device":
-                return CharacterDevice;
-            case "block_device":
-                return BlockDevice;
-            case "fifo":
-                return Fifo;
-            case "socket":
-                return Socket;
-            case "symbolic_link":
-                return SymbolicLink;
-            default:
-                return Unknown;
-        }
+        return switch (fileType) {
+            case "regular" -> Regular;
+            case "directory" -> Directory;
+            case "character_device" -> CharacterDevice;
+            case "block_device" -> BlockDevice;
+            case "fifo" -> Fifo;
+            case "socket" -> Socket;
+            case "symbolic_link" -> SymbolicLink;
+            default -> Unknown;
+        };
     }
 }
