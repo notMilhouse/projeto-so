@@ -6,6 +6,7 @@ import src.domain.snode.FileType;
 import src.domain.snode.SNode;
 import src.domain.snode.SNodeDir;
 import src.domain.snode.SNodeFile;
+import src.domain.bitmap.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,11 @@ public class DiskConverter
     int NumberOfDatablocks;
     int SNodeBitmapRef;
     int DatablockBitmapRef;
-    DiskConverter(File file, int numberOfSnodes, int numberOfDatablocks)
+
+    BitMap SNodeBitmap;
+    BitMap DatablockBitmap;
+
+    public DiskConverter(File file, int numberOfSnodes, int numberOfDatablocks)
     {
         disk = file;
         NumberOfSnodes = numberOfSnodes;
@@ -37,13 +42,13 @@ public class DiskConverter
         {
             diskAccess = new RandomAccessFile(disk, "r");
 
-            SNodeBitmapRef = 28*NumberOfSnodes; //Snode [28]bytes
-            DatablockBitmapRef = SNodeBitmapRef + NumberOfSnodes + NumberOfDatablocks*128; //Datablock 128 bytes
+            SNodeBitmapRef = 28*NumberOfSnodes;                                                 //Snode [28]bytes
+            DatablockBitmapRef = SNodeBitmapRef + NumberOfSnodes/8 + NumberOfDatablocks*128;    //Datablock 128 bytes
 
             //Criar Bitmaps
+            LoadBitmap();
 
-
-            root = ParseSNode(0);
+            //root = ParseSNode(0);
             diskAccess.close();
         }
         catch(Exception err)
@@ -65,6 +70,34 @@ public class DiskConverter
         {
             System.err.println(err);
         }
+    }
+
+    private void LoadBitmap()
+    throws IOException
+    {
+        byte[] ReadBytes = new byte[NumberOfSnodes/8];
+        String byteString = "";
+            
+        diskAccess.seek(SNodeBitmapRef);
+        diskAccess.readFully(ReadBytes);
+
+        for(byte b : ReadBytes)
+        {
+            byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
+        }
+        SNodeBitmap = new BitMap(byteString);
+    
+        ReadBytes = new byte[NumberOfDatablocks/8];
+        diskAccess.seek(DatablockBitmapRef);
+        diskAccess.readFully(ReadBytes);
+
+        byteString = "";
+        for(byte b : ReadBytes)
+        {
+            byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
+        }
+        DatablockBitmap = new BitMap(byteString);
+
     }
 
     /**
