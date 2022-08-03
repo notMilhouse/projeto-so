@@ -1,22 +1,22 @@
 package src.domain.snode;
   //enum dos FileTypes Ok 
 public enum FileType {
-    Unknown                     (new Byte("0b00000000")),
-    Regular                     (new Byte("0b00000001")),
-    Directory                   (new Byte("0b00000010")),
-    CharacterDevice             (new Byte("0b00000011")),
-    BlockDevice                 (new Byte("0b00000100")),
-    Fifo                        (new Byte("0b00000101")),
-    Socket                      (new Byte("0b00000110")),
-    SymbolicLink                (new Byte("0b00000111"));
+    Unknown                     ((byte)0),
+    Regular                     ((byte)1),
+    Directory                   ((byte)2),
+    CharacterDevice             ((byte)3),
+    BlockDevice                 ((byte)4),
+    Fifo                        ((byte)5),
+    Socket                      ((byte)6),
+    SymbolicLink                ((byte)7);
 
-    private final Byte fileType;
+    private final byte fileType;
 
-    FileType(Byte fileType) {
+    FileType(byte fileType) {
         this.fileType = fileType;
     }
 
-    public Byte toByte() {
+    public byte toByte() {
         return fileType;
     }
 
@@ -27,19 +27,19 @@ public enum FileType {
 
     public static FileType parseFileType(byte fileType) {
         switch (fileType) {
-            case 0b00000001:
+            case ((byte)1):
                 return Regular;
-            case 0b00000010:
+            case ((byte)2):
                 return Directory;
-            case 0b00000011:
+            case ((byte)3):
                 return CharacterDevice;
-            case 0b00000100:
+            case ((byte)4):
                 return BlockDevice;
-            case 0b00000101:
+            case ((byte)5):
                 return Fifo;
-            case 0b00000110:
+            case ((byte)6):
                 return Socket;
-            case 0b00000111:
+            case ((byte)7):
                 return SymbolicLink;
             default:
                 return Unknown;

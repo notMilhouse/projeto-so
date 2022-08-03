@@ -2,7 +2,7 @@ package src;
 
 import java.io.FileInputStream;
 
-import model.DataBlock;
+//import model.DataBlock;
 import src.domain.snode.*; //TODO probleminhas aqui kkk
 
 public class FileManagerApplication {
@@ -21,6 +21,6 @@ public class FileManagerApplication {
 
         
         SNode.setBitMap(numFiles);
-        DataBlock.setBitMap(numDataBlocks);
+        //DataBlock.setBitMap(numDataBlocks);
     }
 }
