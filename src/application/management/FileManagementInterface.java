@@ -1,4 +1,4 @@
-package src.application.management.interfacesFiles;
+package src.application.management;
 
 import src.application.management.exceptions.InvalidEntryException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
