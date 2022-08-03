@@ -1,5 +1,7 @@
 package src.domain.disk;
 
+
+import src.domain.snode.SNodeFile;
 import src.domain.snode.*;
 import src.domain.snode.dentry.DEntry;
 
@@ -8,33 +10,37 @@ public class Disk {
 
     private SNodeDir root; 
 
+
     public Disk() {
-        root = new SNodeDir(); //criação do disco inicial 
+        root = new SNodeDir(); //inicialização do disk 
     }
 
-    public boolean insertDirectory(String pathname,String fileName){
-        
-        String[] directorysName = pathname.split("/",0);
-        
-        SNodeDir actualDirectory = root; 
-    
-        for (String directory : directorysName) {
-            try{ 
-                actualDirectory = actualDirectory.searchInDirectory(directory).getSNode(); //realiza a busca dentro do diretório, buscando pelo elemento 
-       
+
+    public void deleteFile(SNodeDir snodeDirBase, String file ){
             
-            } catch (Exception e) {
-                System.out.print(e);
-            }   
-            
+        try{
+         
+            snodeDirBase.removeDEntry(file);
+         
+        } catch(Exception e){
+            System.out.print(e);
         }
+        
+     
+    }
+
+
+    public void insertDirectory(SNodeDir snodeDirBase,SNodeDir snodeInsert, String fileName){
+    
 
         try{    //tentativa inserção de um novo diretorio 
+
             SNodeDir newDirectorySnode = new SNodeDir();
             DEntry newDirectory = new DEntry(newDirectorySnode, 128, FileType.Directory, fileName);
-
-            actualDirectory.InsertDEntry(newDirectory);
+ 
+            snodeDirBase.InsertDEntry(newDirectory);
             
+
         } catch(Exception e){
 
             System.out.print(e);
@@ -42,9 +48,22 @@ public class Disk {
         
     }
 
+    public void insertFile(SNodeDir snodeDirBase, SNodeFile snodefile, String fileName){
+        
+        try{    //tentativa inserção de um novo diretorio 
+
+            SNodeFile newDirectorySnode = snodefile;
+            DEntry newFile = new DEntry(newDirectorySnode, 128, FileType.Directory, fileName);
  
-    
+            snodeDirBase.InsertDEntry(newFile);
+            
 
+        } catch(Exception e){
 
+            System.out.print(e);
+        }
+    }
+ 
 
 }
+
