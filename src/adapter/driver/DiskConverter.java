@@ -6,6 +6,7 @@ import src.domain.snode.FileType;
 import src.domain.snode.SNode;
 import src.domain.snode.SNodeDir;
 import src.domain.snode.SNodeFile;
+import src.domain.bitmap.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,11 @@ public class DiskConverter
     int NumberOfDatablocks;
     int SNodeBitmapRef;
     int DatablockBitmapRef;
-    DiskConverter(File file, int numberOfSnodes, int numberOfDatablocks)
+
+    BitMap SNodeBitmap;
+    BitMap DatablockBitmap;
+
+    public DiskConverter(File file, int numberOfSnodes, int numberOfDatablocks)
     {
         disk = file;
         NumberOfSnodes = numberOfSnodes;
@@ -37,11 +42,11 @@ public class DiskConverter
         {
             diskAccess = new RandomAccessFile(disk, "r");
 
-            SNodeBitmapRef = 28*NumberOfSnodes; //Snode [28]bytes
-            DatablockBitmapRef = SNodeBitmapRef + NumberOfSnodes + NumberOfDatablocks*128; //Datablock 128 bytes
+            SNodeBitmapRef = 28*NumberOfSnodes;                                                 //Snode [28]bytes
+            DatablockBitmapRef = SNodeBitmapRef + NumberOfSnodes/8 + NumberOfDatablocks*128;    //Datablock 128 bytes
 
             //Criar Bitmaps
-
+            LoadBitmap();
 
             root = ParseSNode(0);
             diskAccess.close();
@@ -65,6 +70,39 @@ public class DiskConverter
         {
             System.err.println(err);
         }
+    }
+
+    public SNodeDir GetRoot()
+    {
+        return (SNodeDir)root;
+    }
+
+    private void LoadBitmap()
+    throws IOException
+    {
+        byte[] ReadBytes = new byte[NumberOfSnodes/8];
+        String byteString = "";
+            
+        diskAccess.seek(SNodeBitmapRef);
+        diskAccess.readFully(ReadBytes);
+
+        for(byte b : ReadBytes)
+        {
+            byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
+        }
+        SNodeBitmap = new BitMap(byteString);
+    
+        ReadBytes = new byte[NumberOfDatablocks/8];
+        diskAccess.seek(DatablockBitmapRef);
+        diskAccess.readFully(ReadBytes);
+
+        byteString = "";
+        for(byte b : ReadBytes)
+        {
+            byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
+        }
+        DatablockBitmap = new BitMap(byteString);
+
     }
 
     /**
@@ -94,15 +132,15 @@ public class DiskConverter
             long modificationDate = diskAccess.readLong();                  //Reads [8]
             short length = diskAccess.readShort();                          //Reads [2]
             int dataBlockRef = diskAccess.readUnsignedShort();              //Reads [2]
-
+            
             int[] dataBlocksInBitmap;
 
             if(type == FileType.Directory)
             {
                 snode = new SNodeDir();
+                diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dataBlockRef*128);   
                 long position = diskAccess.getFilePointer();
-                diskAccess.seek(dataBlockRef);    
-
+                
                 dataBlocksInBitmap = new int[1];       
                 dataBlocksInBitmap[0] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
 
@@ -127,7 +165,7 @@ public class DiskConverter
                     dataBlocksInBitmap[i] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
 
 
-                    diskAccess.seek(dataBlockRef);
+                    diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dataBlockRef*128);
                     diskAccess.readFully(snode.DataBlockByIndex(i)); //Erro de intellisense
                     diskAccess.seek(position);
                     dataBlockRef = diskAccess.readUnsignedShort();
@@ -165,7 +203,7 @@ public class DiskConverter
         diskAccess.seek(atRef);
         int snodeRef = diskAccess.readUnsignedShort();
         atRef = (int) diskAccess.getFilePointer();
-        SNode snode = ParseSNode(snodeRef);
+        SNode snode = ParseSNode(snodeRef*28);
         diskAccess.seek(atRef);
 
         //Montar DEntry
@@ -179,7 +217,6 @@ public class DiskConverter
         DEntry dEntry = new DEntry(snode, EntryLength, type, filename);
 
         diskAccess.seek(atRef - 2 + EntryLength);   //Vai para o final do DEntry (should)
-
         return dEntry;
     }
     /*

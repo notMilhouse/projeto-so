@@ -2,8 +2,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import model.DataBlock;
-import model.SNode;
 
 public class FileManagerApplication {
     public static void main(String[] args) {
@@ -20,8 +18,6 @@ public class FileManagerApplication {
         FileInputStream diskFile;
 
         
-        SNode.setBitMap(numFiles);
-        DataBlock.setBitMap(numDataBlocks);
 
     }
 }
