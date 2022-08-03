@@ -1,22 +1,22 @@
 package src.domain.snode;
   //enum dos FileTypes Ok 
 public enum FileType {
-    Unknown                     (new Byte("0b00000000")),
-    Regular                     (new Byte("0b00000001")),
-    Directory                   (new Byte("0b00000010")),
-    CharacterDevice             (new Byte("0b00000011")),
-    BlockDevice                 (new Byte("0b00000100")),
-    Fifo                        (new Byte("0b00000101")),
-    Socket                      (new Byte("0b00000110")),
-    SymbolicLink                (new Byte("0b00000111"));
+    Unknown                     (Byte.parseByte("00000000")),
+    Regular                     (Byte.parseByte("00000001")),
+    Directory                   (Byte.parseByte("00000010")),
+    CharacterDevice             (Byte.parseByte("00000011")),
+    BlockDevice                 (Byte.parseByte("00000100")),
+    Fifo                        (Byte.parseByte("00000101")),
+    Socket                      (Byte.parseByte("00000110")),
+    SymbolicLink                (Byte.parseByte("00000111"));
 
-    private final Byte fileType;
+    private final byte fileType;
 
-    FileType(Byte fileType) {
+    FileType(byte fileType) {
         this.fileType = fileType;
     }
 
-    public Byte toByte() {
+    public byte toByte() {
         return fileType;
     }
 
@@ -26,44 +26,27 @@ public enum FileType {
     }
 
     public static FileType parseFileType(byte fileType) {
-        switch (fileType) {
-            case 0b00000001:
-                return Regular;
-            case 0b00000010:
-                return Directory;
-            case 0b00000011:
-                return CharacterDevice;
-            case 0b00000100:
-                return BlockDevice;
-            case 0b00000101:
-                return Fifo;
-            case 0b00000110:
-                return Socket;
-            case 0b00000111:
-                return SymbolicLink;
-            default:
-                return Unknown;
-        }
+        return switch (fileType) {
+            case 1 -> Regular;
+            case 2 -> Directory;
+            case 3 -> CharacterDevice;
+            case 4 -> BlockDevice;
+            case 5 -> Fifo;
+            case 6 -> Socket;
+            case 7 -> SymbolicLink;
+            default -> Unknown;
+        };
     }
-
     public static FileType parseFileType(String fileType) {
-        switch (fileType) {
-            case "regular":
-                return Regular;
-            case "directory":
-                return Directory;
-            case "character_device":
-                return CharacterDevice;
-            case "block_device":
-                return BlockDevice;
-            case "fifo":
-                return Fifo;
-            case "socket":
-                return Socket;
-            case "symbolic_link":
-                return SymbolicLink;
-            default:
-                return Unknown;
-        }
+        return switch (fileType) {
+            case "regular" -> Regular;
+            case "directory" -> Directory;
+            case "character_device" -> CharacterDevice;
+            case "block_device" -> BlockDevice;
+            case "fifo" -> Fifo;
+            case "socket" -> Socket;
+            case "symbolic_link" -> SymbolicLink;
+            default -> Unknown;
+        };
     }
 }

@@ -6,3 +6,4 @@ delete / A
 addDir /C G
 addDir /C/G H
 addFile /C/G/H I fifo 350
+parse SampleCommandFileDois.txt
