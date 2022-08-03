@@ -11,7 +11,7 @@ public class AddDirectoryCommand extends Command{
         this.filePath = filePath;
         this.fileName = fileName;
         fileType = FileType.Directory;
-        fileLength = 128;
+        fileLength = 128; //TODO check length
     }
     @Override
     public void execute() {

@@ -23,8 +23,7 @@ public class ParseCommandFileCommand extends Command {
         ArrayList<Command> commandList = parseCommandFile(commandFile);
 
         assert commandList != null;
-        for (Command command :
-            commandList) {
+        for (Command command : commandList) {
             command.execute();
         }
     }
@@ -49,6 +48,6 @@ public class ParseCommandFileCommand extends Command {
             System.out.println(ex.getMessage());
         }
 
-        return null;
+        return null; //TODO kill
     }
 }

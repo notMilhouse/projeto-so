@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 public class CommandInterface {
 
-    private Scanner commandScanner;
-    private CommandParser commandParser;
+    private final Scanner commandScanner;
+    private final CommandParser commandParser;
 
     public CommandInterface(
         Scanner commandScanner,

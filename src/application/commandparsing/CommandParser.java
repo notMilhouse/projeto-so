@@ -43,7 +43,7 @@ public class CommandParser {
                     commandArguments[1],
                     commandArguments[2]
                 );
-            case "parseCommandFile":
+            case "parse":
                 if (commandArguments.length != 2) {
                     throw new CommandMissingArgumentsException();
                 }
@@ -58,5 +58,10 @@ public class CommandParser {
                 throw new CommandNotFoundException();
         }
     }
-    //TODO missing commands for saving disk
+    //TODO missing commands for saving disk and listing directory entries
+    //TODO change parseCommandFile to parse
+    /*
+    *
+    *
+    * */
 }
