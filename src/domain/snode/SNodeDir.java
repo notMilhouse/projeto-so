@@ -13,7 +13,8 @@ public class SNodeDir extends SNode {
 
     public SNodeDir(){
         super(FileType.Directory, 128); 
-        this.FreeSpace = 128; //128 bytes disponíveis para armazenar os DEntrys 
+        this.FreeSpace = 128; //128 bytes disponíveis para armazenar os DEntrys
+        this.DEntryList = new ArrayList<DEntry>();
     }
 
     @Override
@@ -21,17 +22,14 @@ public class SNodeDir extends SNode {
     throws InvalidEntryException{
 
         if(dEntry.getSize()> FreeSpace){
-            throw new InvalidEntryException("espaço no diretorio insuficiente"); 
+            throw new InvalidEntryException("espaço no diretorio insuficiente");
         }
 
         this.DEntryList.add(dEntry); //inserção de um novo DEntry 
         this.FreeSpace+= dEntry.getSize();
 
         UpdateModificationDate();
-        
-        
-        return true;        
-        
+        return true;      
     }
 
 
@@ -68,9 +66,16 @@ public class SNodeDir extends SNode {
                 return DEntryList.indexOf(node);
             }
         }
-
         return -1; 
+    }
 
+    public DEntry getDEntryAtIndex(int index)
+    {
+        return DEntryList.get(index);
+    }
+    public int numberOfFilesInDir()
+    {
+        return DEntryList.size();
     }
 
 }
