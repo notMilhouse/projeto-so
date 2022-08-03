@@ -2,13 +2,17 @@ package src.domain.bitmap;
 
 public class BitMap {
     private final int[] bitMap;
-    private int bitAmount;
-    private int chunkAmount;
+    private final int bitAmount;
+    private final int chunkAmount;
+
+    private int current_index;
 
     public BitMap(int K) {
         bitAmount = K;
         chunkAmount = K / 8;
         bitMap = new int[bitAmount];
+
+        current_index = 0;
     }
 
     public BitMap(String bits) {
@@ -23,6 +27,8 @@ public class BitMap {
             bitMap[index] = Integer.parseInt(bit);
             index++;
         }
+
+        current_index = 0;
     }
 
     /**
@@ -88,11 +94,16 @@ public class BitMap {
 
     // Find position by next fit
     private int findNextFit() throws BitMapNextFitNotFoundException {
-        int index = 0;
-        for(int bit : bitMap) {
-            if(bit == 0) return index;
-            index++;
-        }
+        int index = current_index;
+
+        do {
+            if(bitMap[index] == 0) {
+                current_index = index;
+                return index;
+            }
+
+            index = (index + 1) % bitAmount;
+        }while(index != current_index);
 
         throw new BitMapNextFitNotFoundException();
     }
