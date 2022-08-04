@@ -44,6 +44,16 @@ public class DEntry {
         return this.size;
     }
 
+    public FileType getFileType()
+    {
+        return fileType;
+    }
+
+    public SNode getSnode()
+    {
+        return sNode;
+    }
+
     
 
 
