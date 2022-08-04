@@ -23,6 +23,7 @@ public class DiskConverter
 
     int NumberOfSnodes;
     int NumberOfDatablocks;
+
     int SNodeBitmapRef;
     int DatablockBitmapRef;
 
@@ -53,28 +54,151 @@ public class DiskConverter
         }
         catch(Exception err)
         {
+            
             System.err.println(err);
         }
-        
     }
 
-    public void Write(SNodeDir dir, SNode snode)
+    public void WriteSNode(SNodeDir dir, SNode snode, String name)
+    throws IOException, InvalidEntryException
     {
+        diskAccess = new RandomAccessFile(disk, "rw");
+        
+        DEntry dentry = new DEntry(snode, snode.GetFileType(), name);
+        int[] datablockSlots = new int[snode.GetNumberOfDatablocks()];
+
+        int offset = 0;
+        for(int i = 0; i < dir.numberOfFilesInDir(); i++)
+        {
+            offset += dir.getDEntryAtIndex(i).getSize();
+        }
+        if(offset + dentry.getSize() > 128)
+        {
+            //TODO exception
+            return;
+        }
+
+        //Setting up bitmaps
+        for(int i = 0; i < snode.GetNumberOfDatablocks(); i++)
+        {
+            try
+            {
+                datablockSlots[i] = DatablockBitmap.allocateSlot();
+            }
+            catch(Exception err)
+            {
+                System.out.println(err);
+            }
+        }
+        int snoderef = 0;
         try
         {
-            diskAccess = new RandomAccessFile(disk, "w");
-            //Persiste no arquivo
-            diskAccess.close();
+            snoderef = SNodeBitmap.allocateSlot();
         }
         catch(Exception err)
         {
-            System.err.println(err);
+            System.out.println(err);
         }
+        snode.SetBitmap(snoderef, datablockSlots);
+
+
+        
+        diskAccess.seek(SNodeBitmapRef);
+        diskAccess.write(SNodeBitmap.toBits());
+        diskAccess.seek(DatablockBitmapRef);
+        diskAccess.write(DatablockBitmap.toBits());
+
+        //Adding DEntry
+
+        dir.InsertDEntry(dentry);
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset);
+        //diskAccess.write(DEntry.toBits());
+
+
+
+
+        diskAccess.seek(snoderef*28);
+        //diskAccess.write(snode.toBits());
+
+
+
+        diskAccess.close();
     }
 
-    public SNodeDir GetRoot()
+    public boolean DeleteSNode(SNodeDir dir, SNode snode)
+    throws IOException
     {
-        return (SNodeDir)root;
+        diskAccess = new RandomAccessFile(disk, "rw");
+
+        if(snode.GetFileType() == FileType.Directory)
+        {
+            if(((SNodeDir)snode).numberOfFilesInDir() != 0)
+            {
+                return false;
+            }
+        }
+        //Att o bitmap
+        //int snodeRef = snode.getIndexInBitmap() * 28;
+        SNodeBitmap.freeSlot(snode.getIndexInBitmap());
+
+
+        int[] dataBlocksRef = new int[snode.GetNumberOfDatablocks()];
+        int index = 0;
+        for(int ref:snode.getDatablocksInBitmap())
+        {
+            dataBlocksRef[index] = SNodeBitmapRef + NumberOfSnodes/8 + ref*128;
+            DatablockBitmap.freeSlot(ref);
+            index++;
+        }
+
+
+        diskAccess.seek(SNodeBitmapRef);
+        diskAccess.write(SNodeBitmap.toBits());
+        diskAccess.seek(DatablockBitmapRef);
+        diskAccess.write(DatablockBitmap.toBits());
+
+        
+
+        //Remover DEntry
+        int offset = 0;
+        int size = 0;
+        DEntry dentry;
+        for(int i = 0; i < dir.numberOfFilesInDir(); i++)
+        {
+            dentry = dir.getDEntryAtIndex(i);
+            
+            if(dentry.getSnode() == snode)
+            {
+                try
+                {
+                    size = dentry.getSize();
+                    dir.removeDEntry(i);
+                }
+                catch(Exception err)
+                {
+                    System.out.println(err);
+                }
+                break;
+            }
+            offset += dentry.getSize();
+        }
+
+        //Defragmentar o DEntry
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset + size);
+        byte[] datablockRemainder = new byte[128 - offset + size];
+        diskAccess.readFully(datablockRemainder);
+
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset);
+        diskAccess.write(datablockRemainder);
+
+        diskAccess.close();
+        return true;
+    }
+
+
+    public SNode GetRoot()
+    {
+        return root;
     }
 
     private void LoadBitmap()
@@ -214,7 +338,7 @@ public class DiskConverter
         diskAccess.readFully(tempBuffer);
         String filename = new String(tempBuffer, StandardCharsets.ISO_8859_1); //Latin 8 bit charset
 
-        DEntry dEntry = new DEntry(snode, EntryLength, type, filename);
+        DEntry dEntry = new DEntry(snode, type, filename);
 
         diskAccess.seek(atRef - 2 + EntryLength);   //Vai para o final do DEntry (should)
         return dEntry;
