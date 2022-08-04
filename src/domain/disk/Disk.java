@@ -26,7 +26,7 @@ public class Disk {
 
         try{
          
-            snodeDirBase.removeDEntry(file);
+            SNodeDirBase.removeDEntry(file);
             return true;
 
 
@@ -66,7 +66,7 @@ public class Disk {
     public boolean insertFile(String pathName, SNodeFile snodefile, String fileName){
 
 
-        SNodeDir sNodeDirBase = SearchDir(pathName);
+        SNodeDir snodeDirBase = SearchDir(pathName);
         
         try{    //tentativa inserção de um novo diretorio 
 

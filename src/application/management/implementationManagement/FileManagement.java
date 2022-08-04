@@ -1,5 +1,6 @@
 package src.application.management.implementationManagement;
 import src.domain.snode.SNodeDir;
+import src.domain.snode.SNodeFile;
 import src.application.management.exceptions.InvalidEntryException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.application.management.interfacesFiles.FileManagementInterface;
@@ -13,13 +14,13 @@ public class FileManagement implements FileManagementInterface {
 
 
     @Override
-    public boolean addDirectory(String pathname, String filename)
+    public boolean addDirectory(String pathName, String filename)
         throws InvalidEntryException, VirtualFileNotFoundException {
 
-           
-             boolean successfulOperation =  diskStruct.insertDirectory(pathName, snodeInsert, fileName);
+             boolean successfulOperation =  diskStruct.insertDirectory(pathName, filename);
               
-             return successfulOperation;
+             
+            return successfulOperation;
 
     }
 
@@ -30,7 +31,7 @@ public class FileManagement implements FileManagementInterface {
 
        
         SNodeFile file = new SNodeFile(filename,length);
-        boolean successfulOperation =    diskStruct.insertFile(pathName, file, fileName);
+        boolean successfulOperation =    diskStruct.insertFile(pathname, file, filename);
 
             
 
@@ -42,7 +43,7 @@ public class FileManagement implements FileManagementInterface {
     public boolean deleteFile(String pathname, String filename)
             throws InvalidEntryException, VirtualFileNotFoundException {
         
-        boolean successfulOperation = diskStruct.deleteFile(pathName, file);
+        boolean successfulOperation = diskStruct.deleteFile(pathname, filename);
 
 
         return successfulOperation;
