@@ -58,7 +58,7 @@ public class DiskConverter
         
     }
 
-    public void Write()
+    public void Write(SNodeDir dir, SNode snode)
     {
         try
         {
