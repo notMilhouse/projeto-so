@@ -1,5 +1,6 @@
 package src.domain.snode;
 
+import java.io.File;
 //import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -49,6 +50,11 @@ public abstract class SNode {
         indexInBitMap = snodeIndex;
         datablocksInBitmap = dataBlocksIndexes;
     }
+
+    public FileType GetFileType()
+    {
+        return fileType;
+    }
     
 
     
@@ -67,7 +73,14 @@ public abstract class SNode {
     public void ChangeGeneration(Byte generation) {
         Generation = generation;
     }
-
+    public int getIndexInBitmap()
+    {
+        return indexInBitMap;
+    }
+    public int[] getDatablocksInBitmap()
+    {
+        return datablocksInBitmap;
+    }
 
 
     //
