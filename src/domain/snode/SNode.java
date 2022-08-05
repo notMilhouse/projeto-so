@@ -101,7 +101,7 @@ public abstract class SNode {
     //
     public byte[] toBits()
     {
-
+        return null; //TODO return
     }
 
 }

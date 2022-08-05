@@ -2,6 +2,7 @@ package src.application.management;
 
 import src.adapter.driver.DiskConverter;
 import src.application.management.exceptions.InvalidEntryException;
+import src.application.management.exceptions.InvalidSNodeException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.domain.disk.Disk;
 import src.domain.snode.FileType;
@@ -21,9 +22,9 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
 
     @Override
     public boolean addDirectory(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException {
-        fileSystem.addDirectory(new SNodeDir(
+        /*fileSystem.addDirectory(new SNodeDir(
             //TODO
-        ));
+        ));*/
 
         return false;
     }
@@ -51,5 +52,20 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     @Override
     public boolean saveVirtualDisk() {
         return false;
+    }
+
+    @Override
+    public String getSNodeInfo(int snodeId) throws InvalidSNodeException {
+        return null;
+    }
+
+    @Override
+    public String getSnodeBitmap() {
+        return null;
+    }
+
+    @Override
+    public String getDataBlockBitmap() {
+        return null;
     }
 }

@@ -1,7 +1,9 @@
 package src.domain.bitmap;
 
+import java.util.Arrays;
+
 public class BitMap {
-    private final int[] bitMap;
+    private final byte[][] bitMap;
     private final int bitAmount;
     private final int chunkAmount;
 
@@ -10,22 +12,33 @@ public class BitMap {
     public BitMap(int K) {
         bitAmount = K;
         chunkAmount = K / 8;
-        bitMap = new int[bitAmount];
+        bitMap = new byte[chunkAmount][8];
 
         current_index = 0;
     }
 
     public BitMap(String bits) {
         String[] bitsArray = bits.replace(" ", "").split("");
+
         bitAmount = bitsArray.length;
         chunkAmount = bitAmount / 8;
 
-        bitMap = new int[bitAmount];
+        bitMap = new byte[chunkAmount][8];
 
-        int index = 0;
-        for(String bit : bitsArray) {
-            bitMap[index] = Integer.parseInt(bit);
-            index++;
+        int bit = 7;
+        int chunk = 0;
+        for(String bitInArray : bitsArray) {
+
+            bitMap[chunk][bit] = Byte.parseByte(bitInArray);
+
+            if(bit == 0) {
+                bit = 7;
+                chunk++;
+
+                continue;
+            }
+
+            bit--;
         }
 
         current_index = 0;
@@ -36,20 +49,41 @@ public class BitMap {
      *
      * @return vetor do BitMap
      */
-    public int[] getBitMap() {
+    public byte[][] getBitMap() {
         return bitMap;
     }
 
     public byte[] toBits() {
         byte[] bits = new byte[chunkAmount];
 
-        String[] stringMap = toString().split(" ");
-
+        byte chunk_sum;
+        int offset;
         int index = 0;
-        for(String byteString : stringMap) {
-            int integerRepresentation = Integer.parseInt(byteString, 2);
-            bits[index] = (byte) (integerRepresentation);
-            index++;
+
+        for(byte[] chunk : bitMap) {
+            chunk_sum = 0;
+            offset = 0;
+
+            for (byte bit : chunk) {
+                chunk_sum += bit << offset++;
+            }
+
+            /*
+            * 00000000
+            * 00000000
+            * 00000000
+            * 00000001
+            * 00000001
+            * 00000001
+            * 00000000
+            * 00000001
+            *
+            * 00011101
+            *
+            *
+            * */
+
+            bits[index++] = chunk_sum;
         }
 
         return bits;
@@ -60,14 +94,11 @@ public class BitMap {
         StringBuilder map = new StringBuilder();
 
         int index = 0;
-        for(int bit : bitMap) {
-            map.append(bit);
-            index++;
+        for(byte bit : toBits()) {
 
-            if(index == 8) {
-                index = 0;
-                map.append(" ");
-            }
+            String byteString = String.format("%8s", Integer.toBinaryString(bit & 0xFF)).replace(" ", "0");
+            map.append(byteString);
+            map.append(" ");
         }
 
         return map.toString();
@@ -82,27 +113,34 @@ public class BitMap {
     }
 
     public int allocateSlot() throws BitMapPositionAlreadySetException, BitMapNextFitNotFoundException {
-        try {
-            int index = findNextFit();
-            setBitAtPosition(index);
+        int index = findNextFit();
+        setBitAtPosition(index);
 
-            return index;
-        } catch (BitMapException ex) {
-            throw ex;
-        }
+        return index;
     }
 
     // Find position by next fit
     private int findNextFit() throws BitMapNextFitNotFoundException {
+        int index_in_chunk, current_chunk;
+
         int index = current_index;
 
+        /*
+        * 00000000 00000000 00000000
+        *
+        *
+        * */
+
         do {
-            if(bitMap[index] == 0) {
-                current_index = index;
+            index_in_chunk = index % 8;
+            current_chunk = (index / 8) % chunkAmount;
+
+            if(bitMap[current_chunk][index_in_chunk] == 0) {
+                current_index = index + 1;
                 return index;
             }
 
-            index = (index + 1) % bitAmount;
+            index++;
         }while(index != current_index);
 
         throw new BitMapNextFitNotFoundException();
@@ -110,18 +148,25 @@ public class BitMap {
 
     //next fit
     private void setBitAtPosition(int position) throws BitMapPositionAlreadySetException {
-        if (bitMap[position] == 1) {
+        int index_in_chunk = position % 8;
+        int current_chunk = (position / 8) % chunkAmount;
+
+        if (bitMap[current_chunk][index_in_chunk] == 1) {
             throw new BitMapPositionAlreadySetException();
         }
 
-        bitMap[position] = 1;
+        bitMap[current_chunk][index_in_chunk] = 1;
     }
 
     private void unsetBitAtPosition(int position) throws BitMapPositionAlreadyUnsetException {
-        if (bitMap[position] == 0) {
+
+        int index_in_chunk = position % 8;
+        int current_chunk = (position / 8) % chunkAmount;
+
+        if (bitMap[current_chunk][index_in_chunk] == 0) {
             throw new BitMapPositionAlreadyUnsetException();
         }
 
-        bitMap[position] = 0;
+        bitMap[current_chunk][index_in_chunk] = 0;
     }
 }
