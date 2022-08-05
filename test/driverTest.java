@@ -14,7 +14,7 @@ public class driverTest {
     {
         int N = 16;
         int M = 24;
-        File disk = new File("E:\\USP\\OS\\Trabalho2\\projeto-so/SampleVirtualDisk.vdsk");
+        File disk = new File("./testDisk.vdsk");
 
         
 
@@ -23,23 +23,26 @@ public class driverTest {
 
 
         SNodeDir root = (SNodeDir)driver.GetRoot();
+
+        SNodeFile A = new SNodeFile(FileType.Regular, 500);
+        SNodeFile B = new SNodeFile(FileType.BlockDevice, 128);
+        SNodeDir C = new SNodeDir();
+        SNodeFile E = new SNodeFile(FileType.Regular, 301);
+        SNodeDir G = new SNodeDir();
+        SNodeDir H = new SNodeDir();
+        SNodeFile I = new SNodeFile(FileType.Fifo, 350);
+
+        driver.WriteSNode(root, A, "A");
+        driver.WriteSNode(root, B, "B");
+        driver.WriteSNode(root, C, "C");
+        driver.WriteSNode(C, E, "E");
+        driver.DeleteSNode(root, A);
+        driver.WriteSNode(C, G, "G");
+        driver.WriteSNode(G, H, "H");
+        driver.WriteSNode(H, I, "I");
+
         ListAllFiles(root, "/");
-
-
-        SNodeDir sub = new SNodeDir();
-        SNodeFile arq = new SNodeFile(FileType.Fifo, 100);
-
-
-        driver.WriteSNode(H, sub, "Dir");
-        driver.WriteSNode(sub, arq, "Arq");
-
-        ListAllFiles(root, "/");
-
-        driver.DeleteSNode(sub, arq);
-
-        ListAllFiles(root, "/");
-
-        driver.SaveDisk();
+        driver.SaveDisk(disk);
     }
 
     static SNode I;
