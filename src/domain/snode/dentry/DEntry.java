@@ -27,7 +27,7 @@ public class DEntry {
 
         this.fileName = fileName; 
 
-        this.length = (6 + fileName.length()) + (6 + fileName.length())%16;
+        this.length = (6 + fileName.length()) + (16 - (6 + fileName.length())%16);
         
         //size será o tamanho da estrutura DEntry. O tamanho máximo do DEntry deve ser menor que 128 bytes
     }
@@ -72,7 +72,7 @@ public class DEntry {
         int snodeId = sNode.getIndexInBitmap();
 
         System.arraycopy(
-            ByteBuffer.allocate(4).putInt(snodeId).array(), 0,
+            ByteBuffer.allocate(2).putShort((short)snodeId).array(), 0,
             dentryToBits, index,
             2
         );
@@ -80,7 +80,7 @@ public class DEntry {
         index += 2;
 
         System.arraycopy(
-            ByteBuffer.allocate(4).putInt(length).array(), 0,
+            ByteBuffer.allocate(2).putShort((short)length).array(), 0,
             dentryToBits, index,
             2
         );

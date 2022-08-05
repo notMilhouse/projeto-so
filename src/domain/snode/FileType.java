@@ -1,14 +1,14 @@
 package src.domain.snode;
   //enum dos FileTypes Ok 
 public enum FileType {
-    Unknown                     (Byte.parseByte("00000000")),
-    Regular                     (Byte.parseByte("00000001")),
-    Directory                   (Byte.parseByte("00000010")),
-    CharacterDevice             (Byte.parseByte("00000011")),
-    BlockDevice                 (Byte.parseByte("00000100")),
-    Fifo                        (Byte.parseByte("00000101")),
-    Socket                      (Byte.parseByte("00000110")),
-    SymbolicLink                (Byte.parseByte("00000111"));
+    Unknown                     (Byte.parseByte("00000000", 2)),
+    Regular                     (Byte.parseByte("00000001", 2)),
+    Directory                   (Byte.parseByte("00000010", 2)),
+    CharacterDevice             (Byte.parseByte("00000011", 2)),
+    BlockDevice                 (Byte.parseByte("00000100", 2)),
+    Fifo                        (Byte.parseByte("00000101", 2)),
+    Socket                      (Byte.parseByte("00000110", 2)),
+    SymbolicLink                (Byte.parseByte("00000111", 2));
 
     private final byte fileType;
 
