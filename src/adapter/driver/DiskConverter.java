@@ -200,14 +200,6 @@ public class DiskConverter
             index++;
         }
 
-        String byteString = "";
-        for(byte b : DatablockBitmap.toBits())
-        {
-            byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
-        }
-        System.out.println(byteString); //TODO TIRAR !
-
-
         diskAccess.seek(SNodeBitmapRef);
         diskAccess.write(SNodeBitmap.toBits());
         diskAccess.seek(DatablockBitmapRef);
@@ -296,15 +288,15 @@ public class DiskConverter
     {
         /*
             Snode builder
-            Type:           1 byte
-            generation:     1 byte
-            creationDate    8 bytes
-            creationDate    8 bytes
-            length          2 bytes
-            DataBlockRef1   2 bytes (unsigned)
-            DataBlockRef2   2 bytes (unsigned)
-            DataBlockRef3   2 bytes (unsigned)
-            DataBlockRef4   2 bytes (unsigned)
+            Type:               1 byte
+            generation:         1 byte
+            creationDate        8 bytes
+            modificationDate    8 bytes
+            length              2 bytes
+            DataBlockRef1       2 bytes (unsigned)
+            DataBlockRef2       2 bytes (unsigned)
+            DataBlockRef3       2 bytes (unsigned)
+            DataBlockRef4       2 bytes (unsigned)
         */
         SNode snode;
         try
