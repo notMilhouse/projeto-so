@@ -136,11 +136,12 @@ public class BitMap {
             current_chunk = (index / 8) % chunkAmount;
 
             if(bitMap[current_chunk][index_in_chunk] == 0) {
-                current_index = index + 1;
+                current_index = (index + 1) % bitAmount;
                 return index;
             }
 
             index++;
+            index %= bitAmount;
         }while(index != current_index);
 
         throw new BitMapNextFitNotFoundException();
