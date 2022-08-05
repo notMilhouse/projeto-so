@@ -48,7 +48,7 @@ public class Disk {
         try{    //tentativa inserção de um novo diretorio 
 
             SNodeDir newDirectorySnode = new SNodeDir();
-            DEntry newDirectory = new DEntry(newDirectorySnode, 128, FileType.Directory, fileName);
+            DEntry newDirectory = new DEntry(newDirectorySnode, FileType.Directory, fileName);
  
             snodeDirBase.InsertDEntry(newDirectory);
             
@@ -71,7 +71,7 @@ public class Disk {
         try{    //tentativa inserção de um novo diretorio 
 
             SNodeFile newDirectorySnode = snodefile;
-            DEntry newFile = new DEntry(newDirectorySnode, 128, FileType.Directory, fileName);
+            DEntry newFile = new DEntry(newDirectorySnode, FileType.Directory, fileName);
  
             snodeDirBase.InsertDEntry(newFile);
             
@@ -90,8 +90,7 @@ public class Disk {
     private SNodeDir SearchDir(String pathName){
         
         String[] pathname = pathName.split("/"); 
-        
-        String filename = fileName; 
+
         SNodeDir directory = root;
 
 
