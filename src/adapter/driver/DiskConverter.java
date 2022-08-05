@@ -61,6 +61,10 @@ public class DiskConverter
 
             root = ParseSNode(0);
         }
+        catch(IOException err)
+        {
+            System.out.println(err);
+        }
         catch(Exception err)
         {
             System.err.println(err);
@@ -72,7 +76,7 @@ public class DiskConverter
      * 
      * @throws IOException
      */
-    public void SaveDisk()
+    public void SaveDisk(File disk)
     throws IOException
     {
         _diskAccess = new RandomAccessFile("E:/USP/OS/Trabalho2/projeto-so/out/test/test", "rw");
@@ -87,11 +91,13 @@ public class DiskConverter
      * Builds and adds DEntry reference to specified directory.
      * Updates snode reference in bitmap
      * Updates snode datablock(s) reference in bitmap
+     * Update size of directory
      * 
      * In disk:
      * Sets snode reference in bitmap.
      * Sets all snode datablocks references in bitmap.
      * Adds dentry to directory datablock.
+     * Update size of directory
      * 
      * @param dir Directory to insert snode
      * @param snode Snode to be inserted in specified Directory
@@ -128,6 +134,7 @@ public class DiskConverter
                 System.out.println(err);
             }
         }
+
         int snoderef = 0;
         try
         {
@@ -140,24 +147,29 @@ public class DiskConverter
         snode.SetBitmap(snoderef, datablockSlots);
 
 
-        
+        //Updating bitmaps
         diskAccess.seek(SNodeBitmapRef);
         diskAccess.write(SNodeBitmap.toBits());
         diskAccess.seek(DatablockBitmapRef);
         diskAccess.write(DatablockBitmap.toBits());
 
         //Adding DEntry
-
         dir.InsertDEntry(dentry);
         diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset);
         diskAccess.write(dentry.toBits());
 
+        //Increment Generation
+        diskAccess.seek(snoderef*28 + 1);
+        byte generation = diskAccess.readByte();
+        snode.ChangeGeneration(++generation);
 
-
-
+        //Write Snode
         diskAccess.seek(snoderef*28);
         diskAccess.write(snode.toBits());
 
+        //Update size of directory
+        diskAccess.seek(dir.getIndexInBitmap()*28);
+        diskAccess.write(dir.toBits());
     }
 
     /**
