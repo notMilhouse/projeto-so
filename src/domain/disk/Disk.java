@@ -5,6 +5,8 @@ import src.domain.snode.SNodeFile;
 
 import java.security.Principal;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import src.domain.snode.*;
 import src.domain.snode.dentry.DEntry;
 
@@ -43,19 +45,23 @@ public class Disk {
     
 
         SNodeDir snodeDirBase = SearchDir(pathName);
-
-
+        
         try{    //tentativa inserção de um novo diretorio 
-
+            
+            
+            
             SNodeDir newDirectorySnode = new SNodeDir();
             DEntry newDirectory = new DEntry(newDirectorySnode, FileType.Directory, fileName);
  
             snodeDirBase.InsertDEntry(newDirectory);
             
+            
             return true; 
-
+            
+            
+            
         } catch(Exception e){
-
+            
             System.out.print(e);
         
             return false; 
@@ -92,6 +98,13 @@ public class Disk {
         String[] pathname = pathName.split("/"); 
 
         SNodeDir directory = root;
+
+
+        if(pathName.length() == 0){
+          
+            return directory; 
+        }
+
 
 
         for (String actualDir : pathname) {

@@ -99,9 +99,9 @@ public abstract class SNode {
         return datablocksInBitmap.length;
     }
     //
-    public byte[] toBits()
+   /*  public byte[] toBits()
     {
 
-    }
+    }*/
 
 }
