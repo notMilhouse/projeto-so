@@ -39,7 +39,7 @@ public class driverTest {
 
         ListAllFiles(root, "/");
 
-        
+        driver.SaveDisk();
     }
 
     static SNode I;

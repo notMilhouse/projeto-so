@@ -68,7 +68,7 @@ public class DiskConverter
     public void SaveDisk()
     throws IOException
     {
-        _diskAccess = new RandomAccessFile(disk, "r");
+        _diskAccess = new RandomAccessFile("E:/USP/OS/Trabalho2/projeto-so/out/test/test", "rw");
         _diskAccess.seek(0);
         _diskAccess.write(diskAccess.GetByteArray());
         _diskAccess.close();
