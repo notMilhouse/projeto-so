@@ -164,7 +164,7 @@ public class DiskConverter
         {
             byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
         }
-        System.out.println(byteString);
+        System.out.println(byteString); //TODO TIRAR !
 
 
         diskAccess.seek(SNodeBitmapRef);
