@@ -51,6 +51,19 @@ public class SNodeDir extends SNode {
         DEntryList.remove(index);
     }
 
+    public void removeDEntry(int index) throws VirtualFileNotFoundException{
+       
+        //remoção de um DEntry 
+
+
+        if(index < 0 || index > DEntryList.size()) {
+            throw new VirtualFileNotFoundException("arquivo não encontrado");
+        }
+
+        DEntryList.remove(index);
+    }
+
+
     /**
      * busca pelo arquivo dentro do DEntry 
      * @param nameFile
@@ -75,26 +88,6 @@ public class SNodeDir extends SNode {
     public int numberOfFilesInDir()
     {
         return DEntryList.size();
-    }
-
-    /**
-    *   Busca no diretorio por subdiretorios 
-    * @param fileName
-    * @return
-    */
-    public DEntry searchInDirectory(String fileName) throws VirtualFileNotFoundException{//TODO tratar excessão 
-    
-        for (DEntry dentry : DEntryList) {
-            if(dentry.getFileName() == fileName){
-                return dentry;
-            }
-        }
-
-        throw new VirtualFileNotFoundException("diretório inexistente");
-
-
-
-
     }
 
 }

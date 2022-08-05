@@ -19,6 +19,6 @@ public class FileManagerApplication {
 
 
         
-        SNode.setBitMap(numFiles);
+        //SNode.setBitMap(numFiles);
     }
 }
