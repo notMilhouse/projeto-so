@@ -21,12 +21,12 @@ public class SNodeDir extends SNode {
     public boolean InsertDEntry(DEntry dEntry)
     throws InvalidEntryException{
 
-        if(dEntry.getSize()> FreeSpace){
+        if(dEntry.getLength()> FreeSpace){
             throw new InvalidEntryException("espaço no diretorio insuficiente");
         }
 
         this.DEntryList.add(dEntry); //inserção de um novo DEntry 
-        this.FreeSpace+= dEntry.getSize();
+        this.FreeSpace+= dEntry.getLength();
 
         UpdateModificationDate();
         return true;      
