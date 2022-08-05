@@ -38,6 +38,42 @@ public class DiskConverter
         NumberOfDatablocks = numberOfDatablocks;
     }
 
+
+    private void newDisk()
+    {
+        SNodeBitmapRef = 28*NumberOfSnodes;                                                 //Snode [28]bytes
+        DatablockBitmapRef = SNodeBitmapRef + NumberOfSnodes/8 + NumberOfDatablocks*128;    //Datablock 128 bytes
+
+        byte[] data = new byte[DatablockBitmapRef + NumberOfDatablocks/8];
+        diskAccess = new RandomAccessByteArray(data);
+        SNodeDir _temp = new SNodeDir();
+        _temp.ChangeGeneration((byte)1);
+
+        _temp.SetBitmap(0, new int[1]);
+        try
+        {
+            SNodeBitmap = new BitMap(NumberOfSnodes);
+            DatablockBitmap = new BitMap(NumberOfDatablocks);
+            SNodeBitmap.allocateSlot();
+            DatablockBitmap.allocateSlot();
+        }
+        catch(Exception err){}
+
+        //Updating bitmaps
+        diskAccess.seek(SNodeBitmapRef);
+        diskAccess.write(SNodeBitmap.toBits());
+        diskAccess.seek(DatablockBitmapRef);
+        diskAccess.write(DatablockBitmap.toBits());
+
+        //Writing Root
+        diskAccess.seek(0);
+        diskAccess.write(_temp.toBits());
+
+        //Loading disk
+        root = ParseSNode(0);
+
+    }
+
     /**
      * Mounts virtual disk
      */
@@ -61,9 +97,19 @@ public class DiskConverter
 
             root = ParseSNode(0);
         }
+        catch(IOException err)
+        {
+            if( err instanceof java.io.FileNotFoundException)
+            {
+                newDisk();
+                return;
+            }
+
+            System.out.println(err);
+        }
         catch(Exception err)
         {
-            System.err.println(err);
+            System.err.println("Disk Read:" + err);
         }
     }
 
@@ -72,10 +118,10 @@ public class DiskConverter
      * 
      * @throws IOException
      */
-    public void SaveDisk()
+    public void SaveDisk(File disk)
     throws IOException
     {
-        _diskAccess = new RandomAccessFile("E:/USP/OS/Trabalho2/projeto-so/out/test/test", "rw");
+        _diskAccess = new RandomAccessFile(disk, "rw");
         _diskAccess.seek(0);
         _diskAccess.write(diskAccess.GetByteArray());
         _diskAccess.close();
@@ -87,11 +133,13 @@ public class DiskConverter
      * Builds and adds DEntry reference to specified directory.
      * Updates snode reference in bitmap
      * Updates snode datablock(s) reference in bitmap
+     * Update size of directory
      * 
      * In disk:
      * Sets snode reference in bitmap.
      * Sets all snode datablocks references in bitmap.
      * Adds dentry to directory datablock.
+     * Update size of directory
      * 
      * @param dir Directory to insert snode
      * @param snode Snode to be inserted in specified Directory
@@ -128,6 +176,7 @@ public class DiskConverter
                 System.out.println(err);
             }
         }
+
         int snoderef = 0;
         try
         {
@@ -140,24 +189,29 @@ public class DiskConverter
         snode.SetBitmap(snoderef, datablockSlots);
 
 
-        
+        //Updating bitmaps
         diskAccess.seek(SNodeBitmapRef);
         diskAccess.write(SNodeBitmap.toBits());
         diskAccess.seek(DatablockBitmapRef);
         diskAccess.write(DatablockBitmap.toBits());
 
         //Adding DEntry
-
         dir.InsertDEntry(dentry);
         diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset);
-        //diskAccess.write(DEntry.toBits());
+        diskAccess.write(dentry.toBits());
 
+        //Increment Generation
+        diskAccess.seek(snoderef*28 + 1);
+        byte generation = diskAccess.readByte();
+        snode.ChangeGeneration(++generation);
 
-
-
+        //Write Snode
         diskAccess.seek(snoderef*28);
-        //diskAccess.write(snode.toBits());
+        diskAccess.write(snode.toBits());
 
+        //Update size of directory
+        diskAccess.seek(dir.getIndexInBitmap()*28);
+        diskAccess.write(dir.toBits());
     }
 
     /**
@@ -234,9 +288,12 @@ public class DiskConverter
         diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset + size);
         byte[] datablockRemainder = new byte[128 - offset + size];
         diskAccess.readFully(datablockRemainder);
-
         diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset);
         diskAccess.write(datablockRemainder);
+
+        //Update size of directory
+        diskAccess.seek(dir.getIndexInBitmap()*28);
+        diskAccess.write(dir.toBits());
 
         return true;
     }

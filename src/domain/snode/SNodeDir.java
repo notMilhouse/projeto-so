@@ -12,7 +12,7 @@ public class SNodeDir extends SNode {
     private int FreeSpace;
 
     public SNodeDir(){
-        super(FileType.Directory, 128); 
+        super(FileType.Directory, 0); 
         this.FreeSpace = 128; //128 bytes disponíveis para armazenar os DEntrys
         this.DEntryList = new ArrayList<DEntry>();
     }
@@ -26,8 +26,10 @@ public class SNodeDir extends SNode {
         }
 
         this.DEntryList.add(dEntry); //inserção de um novo DEntry 
-        this.FreeSpace+= dEntry.getLength();
 
+        this.FreeSpace -= dEntry.getLength();
+        this.length = 128 - this.FreeSpace;
+        
         UpdateModificationDate();
         return true;      
     }
@@ -48,6 +50,9 @@ public class SNodeDir extends SNode {
             throw new VirtualFileNotFoundException("arquivo não encontrado");
         }
 
+        this.FreeSpace += DEntryList.get(index).getLength();
+        this.length = 128 - this.FreeSpace;
+
         DEntryList.remove(index);
     }
 
@@ -59,6 +64,9 @@ public class SNodeDir extends SNode {
         if(index < 0 || index > DEntryList.size()) {
             throw new VirtualFileNotFoundException("arquivo não encontrado");
         }
+
+        this.FreeSpace += DEntryList.get(index).getLength();
+        this.length = 128 - this.FreeSpace;
 
         DEntryList.remove(index);
     }

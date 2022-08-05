@@ -117,7 +117,7 @@ public abstract class SNode {
             8
         );
 
-        index = 10;
+        index += 8;
 
         byte[] modificationDateAsByteArray = ByteBuffer
             .allocate(8)
@@ -130,7 +130,7 @@ public abstract class SNode {
             8
         );
 
-        index = 18;
+        index += 8;
 
         byte[] lengthAsByteArray = ByteBuffer
             .allocate(2)
@@ -143,17 +143,16 @@ public abstract class SNode {
             2
         );
 
-        index = 20;
-
+        index += 2;
         for(int dataBlockReference : datablocksReferences) {
             System.arraycopy(
-                ByteBuffer.allocate(4).putInt(dataBlockReference).array(), 0,
+                ByteBuffer.allocate(2).putShort((short)dataBlockReference).array(), 0,
                 snodeToBits, index,
                 2
             );
-
             index += 2;
         }
+        //TODO quando ele passar de 32767
 
         return snodeToBits;
     }
