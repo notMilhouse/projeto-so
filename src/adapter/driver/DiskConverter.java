@@ -150,13 +150,13 @@ public class DiskConverter
 
         dir.InsertDEntry(dentry);
         diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset);
-        //diskAccess.write(DEntry.toBits());
+        diskAccess.write(dentry.toBits());
 
 
 
 
         diskAccess.seek(snoderef*28);
-        //diskAccess.write(snode.toBits());
+        diskAccess.write(snode.toBits());
 
     }
 
