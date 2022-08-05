@@ -1,3 +1,5 @@
+package test;
+
 import src.adapter.cli.CommandInterface;
 import src.application.commandparsing.CommandParser;
 import src.application.commandparsing.exception.CommandMissingArgumentsException;

@@ -1,3 +1,0 @@
-addFile / H regular 500
-addFile / I block_device 128
-addDir / J

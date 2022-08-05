@@ -11,31 +11,24 @@ import src.domain.snode.dentry.DEntry;
 
 public class Disk {
 
-    private SNodeDir root; 
-
+    private SNodeDir root;
 
     public Disk() {
         root = new SNodeDir(); //inicialização do disk 
     }
 
-
     public boolean deleteFile(String pathName, String file ){
-            
 
-         SNodeDir SNodeDirBase = SearchDir(pathName);
+        SNodeDir SNodeDirBase = SearchDir(pathName);
 
         try{
-         
             SNodeDirBase.removeDEntry(file);
             return true;
-
 
         } catch(Exception e){
             System.out.print(e);
             return false;
         }
-        
-     
     }
 
 
@@ -84,8 +77,6 @@ public class Disk {
             return false;
         }
     }
- 
-
 
     private SNodeDir SearchDir(String pathName){
         
@@ -103,16 +94,9 @@ public class Disk {
             } catch(Exception e){
 
                 System.out.println(e);
-        
             }
-
         }
-
         return directory;
-
-
     }
-
-
 }
 

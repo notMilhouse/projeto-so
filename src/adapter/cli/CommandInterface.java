@@ -6,11 +6,14 @@ import src.application.commandparsing.exception.CommandNotFoundException;
 
 import java.util.Scanner;
 
-public class CommandInterface {
 
+/*
+* CommandInterface translates user input to commands and execute them
+*
+* */
+public class CommandInterface {
     private final Scanner commandScanner;
     private final CommandParser commandParser;
-
     public CommandInterface(
         Scanner commandScanner,
         CommandParser commandParser
@@ -18,7 +21,6 @@ public class CommandInterface {
         this.commandParser = commandParser;
         this.commandScanner = commandScanner;
     }
-
     public void run() throws CommandMissingArgumentsException, CommandNotFoundException {
         System.out.println("CLI teste");
 
@@ -29,5 +31,4 @@ public class CommandInterface {
                 .execute();
         }
     }
-
 }

@@ -15,8 +15,6 @@ public class AddDirectoryCommand extends Command{
     }
     @Override
     public void execute() {
-        //TODO blabla
-        System.out.println("adicionaria um diretorio");
-        System.out.println(super.toString());
+        fileManager
     }
 }

@@ -1,8 +1,10 @@
 package src.application.commandparsing.command;
 
+import src.application.management.FileSystemManager;
 import src.domain.snode.FileType;
 
 public abstract class Command {
+
     protected String filePath;
     protected String fileName;
     protected FileType fileType;

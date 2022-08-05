@@ -1,13 +1,7 @@
 package src.application.commandparsing;
 
-import src.application.commandparsing.command.AddDirectoryCommand;
-import src.application.commandparsing.command.AddFileCommand;
-import src.application.commandparsing.command.Command;
-import src.application.commandparsing.command.DeleteInstanceCommand;
-import src.application.commandparsing.command.ExitCommand;
-import src.application.commandparsing.command.ParseCommandFileCommand;
-import src.application.commandparsing.exception.CommandMissingArgumentsException;
-import src.application.commandparsing.exception.CommandNotFoundException;
+import src.application.commandparsing.command.*;
+import src.application.commandparsing.exception.*;
 
 public class CommandParser {
 
@@ -54,14 +48,12 @@ public class CommandParser {
                 );
             case "exit":
                 return new ExitCommand();
+            case "saveDisk":
+                return new SaveCommand();
+            case "listDirectory":
+                return new ListDirCommand();
             default:
                 throw new CommandNotFoundException();
         }
     }
-    //TODO missing commands for saving disk and listing directory entries
-    //TODO change parseCommandFile to parse
-    /*
-    *
-    *
-    * */
 }
