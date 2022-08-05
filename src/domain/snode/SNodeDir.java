@@ -52,6 +52,19 @@ public class SNodeDir extends SNode {
         DEntryList.remove(index);
     }
 
+    public void removeDEntry(int index) throws VirtualFileNotFoundException{
+       
+        //remoção de um DEntry 
+
+
+        if(index < 0 || index > DEntryList.size()) {
+            throw new VirtualFileNotFoundException("arquivo não encontrado");
+        }
+
+        DEntryList.remove(index);
+    }
+
+
     /**
      * busca pelo arquivo dentro do DEntry 
      * @param nameFile
@@ -76,6 +89,12 @@ public class SNodeDir extends SNode {
     public int numberOfFilesInDir()
     {
         return DEntryList.size();
+    }
+
+    @Override
+    public int GetNumberOfDatablocks()
+    {
+        return 1;
     }
 
 }

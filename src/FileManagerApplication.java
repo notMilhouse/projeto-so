@@ -18,6 +18,6 @@ public class FileManagerApplication {
         FileInputStream diskFile;
 
         
-        SNode.setBitMap(numFiles);
+        //SNode.setBitMap(numFiles);
     }
 }
