@@ -3,13 +3,14 @@ import java.io.File;
 import java.io.IOException;
 
 import src.adapter.driver.DiskConverter;
+import src.application.management.exceptions.InvalidEntryException;
 import src.domain.snode.FileType;
 import src.domain.snode.*;
 
 
 public class driverTest {
     public static void main(String[] args)
-    throws IOException
+    throws IOException, InvalidEntryException
     {
         int N = 16;
         int M = 24;
@@ -23,12 +24,22 @@ public class driverTest {
 
         SNodeDir root = (SNodeDir)driver.GetRoot();
         ListAllFiles(root, "/");
-        ListAllFiles(H, ">");
 
 
-        driver.DeleteSNode(H, I);
+        SNodeDir sub = new SNodeDir();
+        SNodeFile arq = new SNodeFile(FileType.Fifo, 100);
+
+
+        driver.WriteSNode(H, sub, "Dir");
+        driver.WriteSNode(sub, arq, "Arq");
+
         ListAllFiles(root, "/");
 
+        driver.DeleteSNode(sub, arq);
+
+        ListAllFiles(root, "/");
+
+        
     }
 
     static SNode I;

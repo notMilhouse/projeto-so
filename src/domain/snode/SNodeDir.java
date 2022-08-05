@@ -91,4 +91,10 @@ public class SNodeDir extends SNode {
         return DEntryList.size();
     }
 
+    @Override
+    public int GetNumberOfDatablocks()
+    {
+        return 1;
+    }
+
 }
