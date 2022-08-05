@@ -1,6 +1,5 @@
 package src.domain.bitmap;
 
-import java.util.Arrays;
 
 public class BitMap {
     private final byte[][] bitMap;
