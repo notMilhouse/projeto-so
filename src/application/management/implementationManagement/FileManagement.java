@@ -30,10 +30,9 @@ public class FileManagement implements FileManagementInterface {
         throws InvalidEntryException, VirtualFileNotFoundException {
 
        
-        SNodeFile file = new SNodeFile(filename,length);
+        SNodeFile file = new SNodeFile(type,length);
         boolean successfulOperation =    diskStruct.insertFile(pathname, file, filename);
 
-            
 
      
         return successfulOperation;
