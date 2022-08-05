@@ -39,6 +39,9 @@ public class DiskConverter
         NumberOfDatablocks = numberOfDatablocks;
     }
 
+    /**
+     * Mounts virtual disk
+     */
     public void Read()
     {
         try
@@ -65,6 +68,11 @@ public class DiskConverter
         }
     }
 
+    /**
+     * Persists virtual disk modification
+     * 
+     * @throws IOException
+     */
     public void SaveDisk()
     throws IOException
     {
@@ -74,6 +82,24 @@ public class DiskConverter
         _diskAccess.close();
     }
 
+
+    /**
+     * In instance:
+     * Builds and adds DEntry reference to specified directory.
+     * Updates snode reference in bitmap
+     * Updates snode datablock(s) reference in bitmap
+     * 
+     * In disk:
+     * Sets snode reference in bitmap.
+     * Sets all snode datablocks references in bitmap.
+     * Adds dentry to directory datablock.
+     * 
+     * @param dir Directory to insert snode
+     * @param snode Snode to be inserted in specified Directory
+     * @param name Snode entry name
+     * @return Success of operation
+     * @throws IOException
+    */
     public void WriteSNode(SNodeDir dir, SNode snode, String name)
     throws IOException, InvalidEntryException
     {
@@ -135,6 +161,21 @@ public class DiskConverter
 
     }
 
+    /**
+     * In instance:
+     * Removes target snode from Directory DEntry list.
+     * 
+     * In disk:
+     * Unsets snode reference in bitmap.
+     * Unsets all snode datablocks references in bitmap.
+     * DEfrags specified Directory DEntry datablock.
+     * 
+     * Fails if target snode is a non-empty directory.
+     * @param dir Directory from which target snode will be deleted
+     * @param snode Snode to be deleted from specified Directory
+     * @return Success of operation
+     * @throws IOException
+    */
     public boolean DeleteSNode(SNodeDir dir, SNode snode)
     throws IOException
     {
@@ -209,7 +250,12 @@ public class DiskConverter
         return true;
     }
 
-
+    /**
+     * Returns virtual disk root directory.
+     * Returns {@literal NULL} if virtual disk hasn't been mounted
+     * 
+     * @return Filesystem root directory
+     */
     public SNode GetRoot()
     {
         return root;
