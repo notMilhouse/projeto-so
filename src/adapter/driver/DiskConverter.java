@@ -7,7 +7,6 @@ import src.domain.snode.SNode;
 import src.domain.snode.SNodeDir;
 import src.domain.snode.SNodeFile;
 import src.domain.bitmap.*;
-import src.adapter.driver.RandomAccessByteArray;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +38,9 @@ public class DiskConverter
         NumberOfDatablocks = numberOfDatablocks;
     }
 
+    /**
+     * Mounts virtual disk
+     */
     public void Read()
     {
         try
@@ -65,6 +67,11 @@ public class DiskConverter
         }
     }
 
+    /**
+     * Persists virtual disk modification
+     * 
+     * @throws IOException
+     */
     public void SaveDisk()
     throws IOException
     {
@@ -74,6 +81,24 @@ public class DiskConverter
         _diskAccess.close();
     }
 
+
+    /**
+     * In instance:
+     * Builds and adds DEntry reference to specified directory.
+     * Updates snode reference in bitmap
+     * Updates snode datablock(s) reference in bitmap
+     * 
+     * In disk:
+     * Sets snode reference in bitmap.
+     * Sets all snode datablocks references in bitmap.
+     * Adds dentry to directory datablock.
+     * 
+     * @param dir Directory to insert snode
+     * @param snode Snode to be inserted in specified Directory
+     * @param name Snode entry name
+     * @return Success of operation
+     * @throws IOException
+    */
     public void WriteSNode(SNodeDir dir, SNode snode, String name)
     throws IOException, InvalidEntryException
     {
@@ -83,9 +108,9 @@ public class DiskConverter
         int offset = 0;
         for(int i = 0; i < dir.numberOfFilesInDir(); i++)
         {
-            offset += dir.getDEntryAtIndex(i).getSize();
+            offset += dir.getDEntryAtIndex(i).getLength();
         }
-        if(offset + dentry.getSize() > 128)
+        if(offset + dentry.getLength() > 128)
         {
             //TODO exception
             return;
@@ -124,7 +149,7 @@ public class DiskConverter
         //Adding DEntry
 
         dir.InsertDEntry(dentry);
-        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset);
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset);
         //diskAccess.write(DEntry.toBits());
 
 
@@ -135,6 +160,21 @@ public class DiskConverter
 
     }
 
+    /**
+     * In instance:
+     * Removes target snode from Directory DEntry list.
+     * 
+     * In disk:
+     * Unsets snode reference in bitmap.
+     * Unsets all snode datablocks references in bitmap.
+     * DEfrags specified Directory DEntry datablock.
+     * 
+     * Fails if target snode is a non-empty directory.
+     * @param dir Directory from which target snode will be deleted
+     * @param snode Snode to be deleted from specified Directory
+     * @return Success of operation
+     * @throws IOException
+    */
     public boolean DeleteSNode(SNodeDir dir, SNode snode)
     throws IOException
     {
@@ -152,20 +192,12 @@ public class DiskConverter
 
         int[] dataBlocksRef = new int[snode.GetNumberOfDatablocks()];
         int index = 0;
-        for(int ref : snode.getDatablocksInBitmap())
+        for(int ref : snode.getDatablocksReferences())
         {
             dataBlocksRef[index] = SNodeBitmapRef + NumberOfSnodes/8 + ref*128;
             DatablockBitmap.freeSlot(ref);
             index++;
         }
-
-        String byteString = "";
-        for(byte b : DatablockBitmap.toBits())
-        {
-            byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
-        }
-        System.out.println(byteString); //TODO TIRAR !
-
 
         diskAccess.seek(SNodeBitmapRef);
         diskAccess.write(SNodeBitmap.toBits());
@@ -186,7 +218,7 @@ public class DiskConverter
             {
                 try
                 {
-                    size = dentry.getSize();
+                    size = dentry.getLength();
                     dir.removeDEntry(i);
                 }
                 catch(Exception err)
@@ -195,21 +227,26 @@ public class DiskConverter
                 }
                 break;
             }
-            offset += dentry.getSize();
+            offset += dentry.getLength();
         }
 
         //Defragmentar o DEntry
-        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset + size);
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset + size);
         byte[] datablockRemainder = new byte[128 - offset + size];
         diskAccess.readFully(datablockRemainder);
 
-        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset);
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset);
         diskAccess.write(datablockRemainder);
 
         return true;
     }
 
-
+    /**
+     * Returns virtual disk root directory.
+     * Returns {@literal NULL} if virtual disk hasn't been mounted
+     * 
+     * @return Filesystem root directory
+     */
     public SNode GetRoot()
     {
         return root;
@@ -250,15 +287,15 @@ public class DiskConverter
     {
         /*
             Snode builder
-            Type:           1 byte
-            generation:     1 byte
-            creationDate    8 bytes
-            creationDate    8 bytes
-            length          2 bytes
-            DataBlockRef1   2 bytes (unsigned)
-            DataBlockRef2   2 bytes (unsigned)
-            DataBlockRef3   2 bytes (unsigned)
-            DataBlockRef4   2 bytes (unsigned)
+            Type:               1 byte
+            generation:         1 byte
+            creationDate        8 bytes
+            modificationDate    8 bytes
+            length              2 bytes
+            DataBlockRef1       2 bytes (unsigned)
+            DataBlockRef2       2 bytes (unsigned)
+            DataBlockRef3       2 bytes (unsigned)
+            DataBlockRef4       2 bytes (unsigned)
         */
         SNode snode;
         try

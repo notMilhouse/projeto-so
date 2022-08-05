@@ -1,107 +1,94 @@
 package src.domain.snode;
 
-import java.io.File;
 //import java.sql.Time;
+
+import src.application.management.exceptions.InvalidEntryException;
+import src.domain.bitmap.BitMap;
+import src.domain.snode.dentry.DEntry;
+
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-
-import src.application.management.exceptions.InvalidEntryException;
-import src.domain.snode.dentry.DEntry;
-
-import src.domain.bitmap.BitMap;
-
 public abstract class SNode {
     protected static BitMap bitMap; // BitMap é uma estrutura a parte do SNode
 
     protected FileType fileType;
-    protected Byte Generation;
-    protected ZonedDateTime CreationDate; // pra vermos isso depois
-    protected ZonedDateTime ModificationDate;
-    protected int Length;
-    protected int indexInBitMap; 
-    protected int[] datablocksInBitmap;    
-    
-
+    protected byte generation;
+    protected ZonedDateTime creationDate;
+    protected ZonedDateTime modificationDate;
+    protected int length;
+    protected int indexInBitMap;
+    protected int[] datablocksReferences;
 
     /**
-     * 
      * Criando Novo SNode
      */
     public SNode(FileType filetype, int length) {
-
-        this.Length = length;
-        this.Generation = 0;
-        this.CreationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()); // tempo de criação do SNode
-        this.ModificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
+        this.length = length;
+        this.generation = 0;
+        this.creationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()); // tempo de criação do SNode
+        this.modificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
         this.fileType = filetype;
-
     }
 
-    public void UpdateModificationDate(){
-        this.ModificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
+    public void UpdateModificationDate() {
+        this.modificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
     }
 
-
-
-    public void SetBitmap(int snodeIndex, int[] dataBlocksIndexes)
-    {
+    public void SetBitmap(int snodeIndex, int[] dataBlocksIndexes) {
         indexInBitMap = snodeIndex;
-        datablocksInBitmap = dataBlocksIndexes;
+        datablocksReferences = dataBlocksIndexes;
     }
 
-    public FileType GetFileType()
-    {
+    public FileType GetFileType() {
         return fileType;
     }
-    
 
-    
-    
-    
     /**
      * Carregando SNode
      */
     public void ChangeCreationDate(long time) {
 
-        CreationDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
-    }
-    public void ChangeModificationDate(long time) {
-        ModificationDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
-    }
-    public void ChangeGeneration(Byte generation) {
-        Generation = generation;
-    }
-    public int getIndexInBitmap()
-    {
-        return indexInBitMap;
-    }
-    public int[] getDatablocksInBitmap()
-    {
-        return datablocksInBitmap;
+        creationDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
     }
 
+    public void ChangeModificationDate(long time) {
+        modificationDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
+    }
+
+    public void ChangeGeneration(Byte generation) {
+        this.generation = generation;
+    }
+
+    public int getIndexInBitmap() {
+        return indexInBitMap;
+    }
+
+    public int[] getDatablocksReferences() {
+        return datablocksReferences;
+    }
 
     //
     public boolean InsertDEntry(DEntry dEntry)
-    throws InvalidEntryException{
+        throws InvalidEntryException {
         return false;
     }
-    public byte[] DataBlockByIndex(int index)
-    {
+
+    public byte[] DataBlockByIndex(int index) {
         return null;
     }
 
-    public int GetNumberOfDatablocks()
-    {
-        return datablocksInBitmap.length;
+    public int GetNumberOfDatablocks() {
+        return datablocksReferences.length;
     }
+
     //
-   /*  public byte[] toBits()
+    public byte[] toBits()
     {
 
-    }*/
+    }
 
 }

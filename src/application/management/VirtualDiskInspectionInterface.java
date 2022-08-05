@@ -1,4 +1,4 @@
-package src.application.management.interfacesFiles;
+package src.application.management;
 import src.application.management.exceptions.InvalidSNodeException;
 
 public interface VirtualDiskInspectionInterface {
