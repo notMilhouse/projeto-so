@@ -50,9 +50,8 @@ public class SNodeDir extends SNode {
             throw new VirtualFileNotFoundException("arquivo não encontrado");
         }
 
-        this.FreeSpace -= DEntryList.get(index).getLength();
+        this.FreeSpace += DEntryList.get(index).getLength();
         this.length = 128 - this.FreeSpace;
-
 
         DEntryList.remove(index);
     }
@@ -66,7 +65,7 @@ public class SNodeDir extends SNode {
             throw new VirtualFileNotFoundException("arquivo não encontrado");
         }
 
-        this.FreeSpace -= DEntryList.get(index).getLength();
+        this.FreeSpace += DEntryList.get(index).getLength();
         this.length = 128 - this.FreeSpace;
 
         DEntryList.remove(index);
