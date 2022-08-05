@@ -30,12 +30,13 @@ public abstract class SNode {
      * 
      * Criando Novo SNode
      */
-    public SNode(FileType directory, int length) {
+    public SNode(FileType filetype, int length) {
 
         this.Length = length;
         this.Generation = 0;
         this.CreationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()); // tempo de criação do SNode
         this.ModificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
+        this.fileType = filetype;
 
     }
 
@@ -95,7 +96,7 @@ public abstract class SNode {
 
     public int GetNumberOfDatablocks()
     {
-        return -1;
+        return datablocksInBitmap.length;
     }
     //
 

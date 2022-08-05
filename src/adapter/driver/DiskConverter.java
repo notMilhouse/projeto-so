@@ -7,6 +7,7 @@ import src.domain.snode.SNode;
 import src.domain.snode.SNodeDir;
 import src.domain.snode.SNodeFile;
 import src.domain.bitmap.*;
+import src.adapter.driver.RandomAccessByteArray;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,8 @@ import java.nio.charset.StandardCharsets;
 public class DiskConverter
 {
     File disk;
-    RandomAccessFile diskAccess;
+    RandomAccessByteArray diskAccess;
+    RandomAccessFile _diskAccess;
     //FileInputStream diskIn;
     //FileOutputStream diskOut;
     SNode root;
@@ -41,29 +43,40 @@ public class DiskConverter
     {
         try
         {
-            diskAccess = new RandomAccessFile(disk, "r");
-
             SNodeBitmapRef = 28*NumberOfSnodes;                                                 //Snode [28]bytes
             DatablockBitmapRef = SNodeBitmapRef + NumberOfSnodes/8 + NumberOfDatablocks*128;    //Datablock 128 bytes
+
+            _diskAccess = new RandomAccessFile(disk, "r");
+            byte[] data = new byte[DatablockBitmapRef + NumberOfDatablocks/8];
+
+            _diskAccess.readFully(data);
+
+            diskAccess = new RandomAccessByteArray(data);
+            _diskAccess.close();
 
             //Criar Bitmaps
             LoadBitmap();
 
             root = ParseSNode(0);
-            diskAccess.close();
         }
         catch(Exception err)
         {
-            
             System.err.println(err);
         }
+    }
+
+    public void SaveDisk()
+    throws IOException
+    {
+        _diskAccess = new RandomAccessFile(disk, "r");
+        _diskAccess.seek(0);
+        _diskAccess.write(diskAccess.GetByteArray());
+        _diskAccess.close();
     }
 
     public void WriteSNode(SNodeDir dir, SNode snode, String name)
     throws IOException, InvalidEntryException
     {
-        diskAccess = new RandomAccessFile(disk, "rw");
-        
         DEntry dentry = new DEntry(snode, snode.GetFileType(), name);
         int[] datablockSlots = new int[snode.GetNumberOfDatablocks()];
 
@@ -120,16 +133,11 @@ public class DiskConverter
         diskAccess.seek(snoderef*28);
         //diskAccess.write(snode.toBits());
 
-
-
-        diskAccess.close();
     }
 
     public boolean DeleteSNode(SNodeDir dir, SNode snode)
     throws IOException
     {
-        diskAccess = new RandomAccessFile(disk, "rw");
-
         if(snode.GetFileType() == FileType.Directory)
         {
             if(((SNodeDir)snode).numberOfFilesInDir() != 0)
@@ -144,12 +152,19 @@ public class DiskConverter
 
         int[] dataBlocksRef = new int[snode.GetNumberOfDatablocks()];
         int index = 0;
-        for(int ref:snode.getDatablocksInBitmap())
+        for(int ref : snode.getDatablocksInBitmap())
         {
             dataBlocksRef[index] = SNodeBitmapRef + NumberOfSnodes/8 + ref*128;
             DatablockBitmap.freeSlot(ref);
             index++;
         }
+
+        String byteString = "";
+        for(byte b : DatablockBitmap.toBits())
+        {
+            byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
+        }
+        System.out.println(byteString);
 
 
         diskAccess.seek(SNodeBitmapRef);
@@ -191,7 +206,6 @@ public class DiskConverter
         diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset);
         diskAccess.write(datablockRemainder);
 
-        diskAccess.close();
         return true;
     }
 
@@ -266,9 +280,9 @@ public class DiskConverter
                 long position = diskAccess.getFilePointer();
                 
                 dataBlocksInBitmap = new int[1];       
-                dataBlocksInBitmap[0] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
+                dataBlocksInBitmap[0] = dataBlockRef;
 
-                while(diskAccess.getFilePointer() < position + length) //TODO Ver se esse while faz sentido
+                while(diskAccess.getFilePointer() < position + length) 
                 {
                     DEntry dEntry = ParseDir((int)diskAccess.getFilePointer());
                     snode.InsertDEntry(dEntry); //Erro de intellisense
@@ -286,8 +300,7 @@ public class DiskConverter
                 for(int i = 0; i < nDataBlocks; i++)
                 {
 
-                    dataBlocksInBitmap[i] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
-
+                    dataBlocksInBitmap[i] = dataBlockRef;
 
                     diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dataBlockRef*128);
                     diskAccess.readFully(snode.DataBlockByIndex(i)); //Erro de intellisense
