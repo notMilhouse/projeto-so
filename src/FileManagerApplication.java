@@ -2,7 +2,7 @@ package src;
 
 import java.io.FileInputStream;
 import src.domain.snode.*; //TODO probleminhas aqui kkk
-
+import src.domain.snode.dentry.*;
 public class FileManagerApplication {
     public static void main(String[] args) {
 
@@ -15,7 +15,8 @@ public class FileManagerApplication {
         int numFiles = Integer.parseInt(args[1]);
         int numDataBlocks = Integer.parseInt(args[2]);
 
-        FileInputStream diskFile;
+        FileInputStream diskFile; //disco 
+
 
         
         //SNode.setBitMap(numFiles);

@@ -5,11 +5,11 @@ import src.application.management.exceptions.InvalidEntryException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.dentry.DEntry;
 
+
 public class SNodeDir extends SNode {
   
-    ArrayList<DEntry> DEntryList;
-
-    int FreeSpace;
+    private ArrayList<DEntry> DEntryList;
+    private int FreeSpace;
 
     public SNodeDir(){
         super(FileType.Directory, 128); 
@@ -31,7 +31,6 @@ public class SNodeDir extends SNode {
         UpdateModificationDate();
         return true;      
     }
-
 
 
     /**
@@ -70,8 +69,8 @@ public class SNodeDir extends SNode {
      * @param nameFile
      * @return
      * @throws VirtualFileNotFoundException
+     * 
      */
-
     private int searchDEntryList(String nameFile) throws VirtualFileNotFoundException  {
       
         for(DEntry node : DEntryList){
@@ -81,6 +80,29 @@ public class SNodeDir extends SNode {
         }
         return -1; 
     }
+
+
+
+    
+    /**
+    *   Busca no diretorio por subdiretorios 
+    * @param fileName
+    * @return
+    */
+    public DEntry searchInDirectory(String fileName) throws VirtualFileNotFoundException{//TODO tratar excessão 
+    
+        for (DEntry dentry : DEntryList) {
+            if(dentry.getFileName() == fileName){
+                return dentry;
+            }
+        }
+
+        throw new VirtualFileNotFoundException("diretório inexistente");
+
+
+
+    }
+
 
     public DEntry getDEntryAtIndex(int index)
     {
@@ -96,5 +118,6 @@ public class SNodeDir extends SNode {
     {
         return 1;
     }
+
 
 }

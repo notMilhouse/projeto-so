@@ -3,6 +3,7 @@ package src.domain.snode.dentry;
 import src.application.management.exceptions.InvalidEntryException;
 import src.domain.snode.FileType;
 import src.domain.snode.SNode;
+import src.domain.snode.SNodeDir;
 
 public class DEntry {
     private final SNode sNode; //isso pode ser tanto um snode de diretorio como de arquivo
@@ -34,6 +35,10 @@ public class DEntry {
         
 
 
+    }
+
+    public SNode getSNode(){
+        return this.sNode;
     }
 
     public String getFileName(){
