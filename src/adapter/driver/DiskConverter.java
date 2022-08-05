@@ -7,6 +7,7 @@ import src.domain.snode.SNode;
 import src.domain.snode.SNodeDir;
 import src.domain.snode.SNodeFile;
 import src.domain.bitmap.*;
+import src.adapter.driver.RandomAccessByteArray;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,13 +17,15 @@ import java.nio.charset.StandardCharsets;
 public class DiskConverter
 {
     File disk;
-    RandomAccessFile diskAccess;
+    RandomAccessByteArray diskAccess;
+    RandomAccessFile _diskAccess;
     //FileInputStream diskIn;
     //FileOutputStream diskOut;
     SNode root;
 
     int NumberOfSnodes;
     int NumberOfDatablocks;
+
     int SNodeBitmapRef;
     int DatablockBitmapRef;
 
@@ -40,41 +43,176 @@ public class DiskConverter
     {
         try
         {
-            diskAccess = new RandomAccessFile(disk, "r");
-
             SNodeBitmapRef = 28*NumberOfSnodes;                                                 //Snode [28]bytes
             DatablockBitmapRef = SNodeBitmapRef + NumberOfSnodes/8 + NumberOfDatablocks*128;    //Datablock 128 bytes
+
+            _diskAccess = new RandomAccessFile(disk, "r");
+            byte[] data = new byte[DatablockBitmapRef + NumberOfDatablocks/8];
+
+            _diskAccess.readFully(data);
+
+            diskAccess = new RandomAccessByteArray(data);
+            _diskAccess.close();
 
             //Criar Bitmaps
             LoadBitmap();
 
             root = ParseSNode(0);
-            diskAccess.close();
         }
         catch(Exception err)
         {
             System.err.println(err);
         }
-        
     }
 
-    public void Write()
+    public void SaveDisk()
+    throws IOException
     {
+        _diskAccess = new RandomAccessFile("E:/USP/OS/Trabalho2/projeto-so/out/test/test", "rw");
+        _diskAccess.seek(0);
+        _diskAccess.write(diskAccess.GetByteArray());
+        _diskAccess.close();
+    }
+
+    public void WriteSNode(SNodeDir dir, SNode snode, String name)
+    throws IOException, InvalidEntryException
+    {
+        DEntry dentry = new DEntry(snode, snode.GetFileType(), name);
+        int[] datablockSlots = new int[snode.GetNumberOfDatablocks()];
+
+        int offset = 0;
+        for(int i = 0; i < dir.numberOfFilesInDir(); i++)
+        {
+            offset += dir.getDEntryAtIndex(i).getSize();
+        }
+        if(offset + dentry.getSize() > 128)
+        {
+            //TODO exception
+            return;
+        }
+
+        //Setting up bitmaps
+        for(int i = 0; i < snode.GetNumberOfDatablocks(); i++)
+        {
+            try
+            {
+                datablockSlots[i] = DatablockBitmap.allocateSlot();
+            }
+            catch(Exception err)
+            {
+                System.out.println(err);
+            }
+        }
+        int snoderef = 0;
         try
         {
-            diskAccess = new RandomAccessFile(disk, "w");
-            //Persiste no arquivo
-            diskAccess.close();
+            snoderef = SNodeBitmap.allocateSlot();
         }
         catch(Exception err)
         {
-            System.err.println(err);
+            System.out.println(err);
         }
+        snode.SetBitmap(snoderef, datablockSlots);
+
+
+        
+        diskAccess.seek(SNodeBitmapRef);
+        diskAccess.write(SNodeBitmap.toBits());
+        diskAccess.seek(DatablockBitmapRef);
+        diskAccess.write(DatablockBitmap.toBits());
+
+        //Adding DEntry
+
+        dir.InsertDEntry(dentry);
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset);
+        //diskAccess.write(DEntry.toBits());
+
+
+
+
+        diskAccess.seek(snoderef*28);
+        //diskAccess.write(snode.toBits());
+
     }
 
-    public SNodeDir GetRoot()
+    public boolean DeleteSNode(SNodeDir dir, SNode snode)
+    throws IOException
     {
-        return (SNodeDir)root;
+        if(snode.GetFileType() == FileType.Directory)
+        {
+            if(((SNodeDir)snode).numberOfFilesInDir() != 0)
+            {
+                return false;
+            }
+        }
+        //Att o bitmap
+        //int snodeRef = snode.getIndexInBitmap() * 28;
+        SNodeBitmap.freeSlot(snode.getIndexInBitmap());
+
+
+        int[] dataBlocksRef = new int[snode.GetNumberOfDatablocks()];
+        int index = 0;
+        for(int ref : snode.getDatablocksInBitmap())
+        {
+            dataBlocksRef[index] = SNodeBitmapRef + NumberOfSnodes/8 + ref*128;
+            DatablockBitmap.freeSlot(ref);
+            index++;
+        }
+
+        String byteString = "";
+        for(byte b : DatablockBitmap.toBits())
+        {
+            byteString += String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
+        }
+        System.out.println(byteString); //TODO TIRAR !
+
+
+        diskAccess.seek(SNodeBitmapRef);
+        diskAccess.write(SNodeBitmap.toBits());
+        diskAccess.seek(DatablockBitmapRef);
+        diskAccess.write(DatablockBitmap.toBits());
+
+        
+
+        //Remover DEntry
+        int offset = 0;
+        int size = 0;
+        DEntry dentry;
+        for(int i = 0; i < dir.numberOfFilesInDir(); i++)
+        {
+            dentry = dir.getDEntryAtIndex(i);
+            
+            if(dentry.getSnode() == snode)
+            {
+                try
+                {
+                    size = dentry.getSize();
+                    dir.removeDEntry(i);
+                }
+                catch(Exception err)
+                {
+                    System.out.println(err);
+                }
+                break;
+            }
+            offset += dentry.getSize();
+        }
+
+        //Defragmentar o DEntry
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset + size);
+        byte[] datablockRemainder = new byte[128 - offset + size];
+        diskAccess.readFully(datablockRemainder);
+
+        diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksInBitmap()[0]*128 + offset);
+        diskAccess.write(datablockRemainder);
+
+        return true;
+    }
+
+
+    public SNode GetRoot()
+    {
+        return root;
     }
 
     private void LoadBitmap()
@@ -142,9 +280,9 @@ public class DiskConverter
                 long position = diskAccess.getFilePointer();
                 
                 dataBlocksInBitmap = new int[1];       
-                dataBlocksInBitmap[0] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
+                dataBlocksInBitmap[0] = dataBlockRef;
 
-                while(diskAccess.getFilePointer() < position + length) //TODO Ver se esse while faz sentido
+                while(diskAccess.getFilePointer() < position + length) 
                 {
                     DEntry dEntry = ParseDir((int)diskAccess.getFilePointer());
                     snode.InsertDEntry(dEntry); //Erro de intellisense
@@ -162,8 +300,7 @@ public class DiskConverter
                 for(int i = 0; i < nDataBlocks; i++)
                 {
 
-                    dataBlocksInBitmap[i] = (dataBlockRef - (DatablockBitmapRef + NumberOfDatablocks))/128; //TODO isso n faz sentido favor arrumar
-
+                    dataBlocksInBitmap[i] = dataBlockRef;
 
                     diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dataBlockRef*128);
                     diskAccess.readFully(snode.DataBlockByIndex(i)); //Erro de intellisense
@@ -214,40 +351,9 @@ public class DiskConverter
         diskAccess.readFully(tempBuffer);
         String filename = new String(tempBuffer, StandardCharsets.ISO_8859_1); //Latin 8 bit charset
 
-        DEntry dEntry = new DEntry(snode, EntryLength, type, filename);
+        DEntry dEntry = new DEntry(snode, type, filename);
 
         diskAccess.seek(atRef - 2 + EntryLength);   //Vai para o final do DEntry (should)
         return dEntry;
     }
-    /*
-    public byte[] ReadBytes(int numberOfBytes)
-    throws IOException
-    {
-        byte[] byteArray = new byte[numberOfBytes];
-        diskAccess.read(byteArray, 0, numberOfBytes);
-        return byteArray;
-    }
-
-    public long ByteArrayToLong(byte[] byteArray)
-    {
-        ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
-        return wrapper.getLong();
-    }
-    public int ByteArrayToInt(byte[] byteArray)
-    {
-        ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
-        return wrapper.getInt();
-    }
-    public int ByteArrayToUnsignedShort(byte[] byteArray)
-    {
-        ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
-        short ShortValue = wrapper.getShort();
-        return ShortValue >= 0? ShortValue : 0x10000 + ShortValue;
-    }
-    public short ByteArrayToShort(byte[] byteArray)
-    {
-        ByteBuffer wrapper = ByteBuffer.wrap(byteArray);
-        return wrapper.getShort();
-    }
-    */
 }
