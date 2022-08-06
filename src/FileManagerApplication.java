@@ -1,24 +1,31 @@
 package src;
+import src.application.management.FileSystemManager;
+import src.application.commandparsing.CommandParser;
 
-import java.io.FileInputStream;
-import src.domain.snode.*; //TODO probleminhas aqui kkk
-import src.domain.snode.dentry.*;
+import java.io.File;
+import java.util.Scanner;
+
+import src.adapter.driver.DiskConverter;
+import src.adapter.cli.CommandInterface;
+
 public class FileManagerApplication {
     public static void main(String[] args) {
 
         if(args.length == 0 || args[0] == null || args[1] == null || args[2] == null) {
-            System.out.println("Por favor, informe o nome do disco virtual, bem como o número de arquivos e de blocos de dados referentes a ele.");
+            System.out.println("Usage 'FileManagerApplication <disk path> <number of snodes> <number of datablocks>'");
             return;
         }
 
-        String diskFileName = args[0];
-        int numFiles = Integer.parseInt(args[1]);
-        int numDataBlocks = Integer.parseInt(args[2]);
+        String disk = args[0];
+        int numberOfSnodes = Integer.parseInt(args[1]);
+        int numberOfDatablocks = Integer.parseInt(args[2]);
 
-        FileInputStream diskFile; //disco 
-
-
-        
-        //SNode.setBitMap(numFiles);
+        new FileSystemManager(new DiskConverter(new File(disk),
+                numberOfSnodes, 
+                numberOfDatablocks
+            ), 
+            new CommandInterface(new Scanner(System.in), new CommandParser()),
+            new CommandParser()
+        ).run();
     }
 }
