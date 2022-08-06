@@ -86,9 +86,74 @@ public abstract class SNode {
     }
 
     //
-    public byte[] toBits()
-    {
+    public byte[] toBits() {
+        /*
+            Snode builder
+            Type:           1 byte
+            generation:     1 byte
+            creationDate    8 bytes
+            creationDate    8 bytes
+            length          2 bytes
+            DataBlockRef1   2 bytes (unsigned)
+            DataBlockRef2   2 bytes (unsigned)
+            DataBlockRef3   2 bytes (unsigned)
+            DataBlockRef4   2 bytes (unsigned)
+        */
 
+        byte[] snodeToBits = new byte[28];
+        int index = 0;
+
+        snodeToBits[index++] = fileType.toByte();
+        snodeToBits[index++] = generation;
+
+        byte[] creationDateAsByteArray = ByteBuffer
+                .allocate(8)
+                .putLong(creationDate.toInstant().toEpochMilli())
+                .array();
+
+        System.arraycopy(
+            creationDateAsByteArray, 0,
+            snodeToBits, index,
+            8
+        );
+
+        index = 10;
+
+        byte[] modificationDateAsByteArray = ByteBuffer
+            .allocate(8)
+            .putLong(modificationDate.toInstant().toEpochMilli())
+            .array();
+
+        System.arraycopy(
+            modificationDateAsByteArray, 0,
+            snodeToBits, index,
+            8
+        );
+
+        index = 18;
+
+        byte[] lengthAsByteArray = ByteBuffer
+            .allocate(2)
+            .putShort((short)length)
+            .array();
+
+        System.arraycopy(
+            lengthAsByteArray, 0,
+            snodeToBits, index,
+            2
+        );
+
+        index += 2;
+        for(int dataBlockReference : datablocksReferences) {
+            System.arraycopy(
+                ByteBuffer.allocate(2).putShort((short)dataBlockReference).array(), 0,
+                snodeToBits, index,
+                2
+            );
+            index += 2;
+        }
+        //TODO quando ele passar de 32767
+
+        return snodeToBits;
     }
-
 }
