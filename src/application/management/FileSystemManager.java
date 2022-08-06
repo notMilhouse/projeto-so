@@ -29,6 +29,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     private final CommandParser commandParser;
 
     private SNodeDir root;
+    private String workDir = "";
 
 
     /**
@@ -57,7 +58,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         while (true) {
             try {
                 handleCommand(
-                    userInterface.run()
+                    userInterface.run(workDir)
                 );
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
@@ -140,6 +141,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         if(pathname.equals("/"))  //o diretorio é o root. Isso considerando que pathname = "/" ;
             return root;
 
+        pathname = workDir + pathname;
         String[] directories = pathname.replaceAll("^/+", "").split("/");
 
         return searchDirArray(root, directories);
@@ -170,6 +172,30 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         else
         {
             return searchDirArray((SNodeDir)dir.searchInDirectory(directories[0]).getSNode(), Arrays.copyOfRange(directories, 1, directories.length));
+        }
+    }
+
+    /*
+     * Changes work directory to specified directory
+     */
+    private void changeDirectory(String pathname) throws VirtualFileNotFoundException
+    {
+        if(pathname.equals("/"))
+        {
+            workDir = "";
+            return;
+        }
+        if(pathname.equals(".."))
+        {
+            String[] dirs = workDir.split("/");
+            workDir = String.join("/", Arrays.copyOfRange(dirs, 0, dirs.length-1));
+            return;
+        }
+        SNodeDir path = searchDirectory(pathname);
+        if(path != null)
+        {
+            workDir = workDir.replaceAll("/+$", "");
+            workDir += pathname;
         }
     }
 
@@ -260,21 +286,58 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         }
     }
 
-
-    //TODO Esses
     @Override
     public String getSNodeInfo(int snodeId) throws InvalidSNodeException {
-        return null;
+        /** SNode Id
+         *  Generation
+         *  Creation Date
+         *  Modification Date
+         *  Size
+         *  Datablocks Ids:
+         */
+        if(snodeId > diskDriver.GetNumberOfSnodes() || snodeId < 0)
+        {
+            throw new InvalidSNodeException("SNode id <"+ snodeId +"> is invalid for mounted disk");
+        }
+        SNode snode;
+        try
+        {
+            snode = diskDriver.ParseSNode(snodeId*28);
+        }
+        catch(Exception err)
+        {
+            throw new InvalidSNodeException("Invalid SNode");
+        }
+        StringBuilder Info = new StringBuilder();
+        Info.append("SNode id: " + snode.getIndexInBitmap() + "\n");
+        Info.append("   Type                : " + snode.GetFileType() + "\n");
+        Info.append("   Generation          : " + snode.getGeneration() + "\n");
+        Info.append("   Creation Date       : " + snode.getCreationDate() + "\n");
+        Info.append("   Modification Date   : " + snode.getModificationDate() + "\n");
+        Info.append("   Size                : " + snode.getLength() + "\n");
+        if(snode.GetFileType() == FileType.Directory)
+        {
+            Info.append("   Entries             : [");
+            for(int i = 0; i < ((SNodeDir)snode).numberOfFilesInDir(); i++)
+            {
+                Info.append(((SNodeDir)snode).getDEntryAtIndex(i).getFileName() + ", ");
+            }
+            Info.append("]\n");
+
+            return Info.toString();
+        }
+        Info.append("   Datablocks          : " + Arrays.toString(snode.getDatablocksReferences()) + "\n");
+        return Info.toString();
     }
 
     @Override
     public String getSnodeBitmap() {
-        return null;
+        return diskDriver.GetSNodeBitmap();
     }
 
     @Override
     public String getDataBlockBitmap() {
-        return null;
+        return diskDriver.GetDatablockBitmap();
     }
 
 }
