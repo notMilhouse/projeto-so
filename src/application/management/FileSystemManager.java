@@ -237,6 +237,8 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         }
     }
 
+
+    //TODO Esses
     @Override
     public String getSNodeInfo(int snodeId) throws InvalidSNodeException {
         return null;
