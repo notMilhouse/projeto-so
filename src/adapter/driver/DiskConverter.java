@@ -1,6 +1,8 @@
 package src.adapter.driver;
 
 import src.application.management.exceptions.InvalidEntryException;
+import src.application.management.exceptions.VirtualFileNotFoundException;
+
 import src.domain.snode.dentry.DEntry;
 import src.domain.snode.FileType;
 import src.domain.snode.SNode;
@@ -144,10 +146,11 @@ public class DiskConverter {
      * @param snode Snode to be inserted in specified Directory
      * @param name Snode entry name
      * @return Success of operation
-     * @throws IOException
+     * @throws InvalidEntryException
+     * @throws VirtualFileNotFoundException
     */
-    public void WriteSNode(SNodeDir dir, SNode snode, String name)
-    throws IOException, InvalidEntryException
+    public boolean WriteSNode(SNodeDir dir, SNode snode, String name)
+    throws InvalidEntryException, VirtualFileNotFoundException
     {
         DEntry dentry = new DEntry(snode, snode.GetFileType(), name);
         int[] datablockSlots = new int[snode.GetNumberOfDatablocks()];
@@ -159,8 +162,7 @@ public class DiskConverter {
         }
         if(offset + dentry.getLength() > 128)
         {
-            //TODO exception
-            return;
+            return false;
         }
 
         //Setting up bitmaps
@@ -172,7 +174,7 @@ public class DiskConverter {
             }
             catch(Exception err)
             {
-                System.out.println(err);
+                return false; //TODO DEALLOCATE
             }
         }
 
@@ -183,7 +185,7 @@ public class DiskConverter {
         }
         catch(Exception err)
         {
-            System.out.println(err);
+            return false; //TODO DEALLOCATE
         }
         snode.SetBitmap(snoderef, datablockSlots);
 
@@ -211,6 +213,8 @@ public class DiskConverter {
         //Update size of directory
         diskAccess.seek(dir.getIndexInBitmap()*28);
         diskAccess.write(dir.toBits());
+
+        return true;
     }
 
     /**
@@ -226,10 +230,10 @@ public class DiskConverter {
      * @param dir Directory from which target snode will be deleted
      * @param snode Snode to be deleted from specified Directory
      * @return Success of operation
-     * @throws IOException
+     * @throws VirtualFileNotFoundException
     */
     public boolean DeleteSNode(SNodeDir dir, SNode snode)
-    throws IOException
+    throws VirtualFileNotFoundException
     {
         if(snode.GetFileType() == FileType.Directory)
         {
@@ -269,16 +273,8 @@ public class DiskConverter {
             
             if(dentry.getSnode() == snode)
             {
-                try
-                {
-                    size = dentry.getLength();
-                    dir.removeDEntry(i);
-                }
-                catch(Exception err)
-                {
-                    System.out.println(err);
-                }
-                break;
+                size = dentry.getLength();
+                dir.removeDEntry(i);
             }
             offset += dentry.getLength();
         }
