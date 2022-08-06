@@ -1,12 +1,5 @@
 package src.domain.disk;
-
-
 import src.domain.snode.SNodeFile;
-
-import java.security.Principal;
-
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
 import src.domain.snode.*;
 import src.domain.snode.dentry.DEntry;
 
