@@ -1,5 +1,5 @@
 package src.application.management;
-import src.application.management.exceptions.InvalidSNodeException;
+import src.domain.snode.exceptions.InvalidSNodeException;
 
 public interface VirtualDiskInspectionInterface {
     	

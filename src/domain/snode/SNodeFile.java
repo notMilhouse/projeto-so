@@ -1,5 +1,9 @@
 package src.domain.snode;
 
+import src.domain.snode.dentry.DEntry;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
+import src.domain.snode.exceptions.InvalidLengthForSnodeException;
+
 import java.util.ArrayList;
 
 public class SNodeFile extends SNode {
@@ -7,7 +11,7 @@ public class SNodeFile extends SNode {
     
     private final ArrayList <byte[]> DataBlocks;
 
-    public SNodeFile(FileType fileType, int length){
+    public SNodeFile(FileType fileType, int length) throws InvalidLengthForSnodeException {
         super(fileType, length);
 
         DataBlocks = new ArrayList<byte[]>();
@@ -22,9 +26,9 @@ public class SNodeFile extends SNode {
 
             [xxx00]: if any bit higher than the 9th is set we have a overflow or underflow 
         */
-        int nOfDataBlocks = (length - 1) >> 7; // TODO Ver se vamos precisar subtrair -1 do length antes de fazer o bitshift
+        int numberOfDataBlocks = (length - 1) >> 7;
 
-        switch(nOfDataBlocks){
+        switch(numberOfDataBlocks){
           
             case 3:
                 DataBlocks.add(new byte[128]);
@@ -43,11 +47,14 @@ public class SNodeFile extends SNode {
                     break;
                 }
                 //OVERFLOW
-
-                
-                break;
+                throw new InvalidLengthForSnodeException();
         }
     
+    }
+
+    @Override
+    public boolean InsertDEntry(DEntry dEntry) throws InvalidEntryException {
+        return false; // a file cannot hold an entry
     }
 
     @Override
@@ -60,8 +67,4 @@ public class SNodeFile extends SNode {
     {
         return DataBlocks.size();
     }
-
-    
-
-
 }

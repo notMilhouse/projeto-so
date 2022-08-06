@@ -4,6 +4,10 @@ import src.domain.snode.FileType;
 
 import java.io.File;
 
+/**
+ * AddFileCommand represents the add file, file manager operation.
+ * It requires all {@link Command} fields.
+ * */
 public class AddFileCommand extends Command{
 
     public AddFileCommand(

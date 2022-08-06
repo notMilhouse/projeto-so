@@ -3,8 +3,20 @@ package src.application.commandparsing;
 import src.application.commandparsing.command.*;
 import src.application.commandparsing.exception.*;
 
+
+/**
+ * CommandParser is responsible for, given a raw string command, matching it to a Command object.
+ * */
 public class CommandParser {
 
+    /**
+     * parseCommand matches a string to a Command, and parses any given arguments to the required fields
+     * @param command represents a raw command given by user input
+     * @return a Command object
+     *
+     * @throws CommandNotFoundException when there is no command that matches the given string
+     * @throws CommandMissingArgumentsException when a command is valid but its required fields are not included in user prompt
+     * */
     public Command parseCommand(String command) throws CommandNotFoundException, CommandMissingArgumentsException {
         String[] commandArguments = command.split(" ");
 

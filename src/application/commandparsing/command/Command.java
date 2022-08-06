@@ -2,8 +2,14 @@ package src.application.commandparsing.command;
 
 import src.domain.snode.FileType;
 
-import java.io.File;
 
+/**
+ * Command is a representation of an operation in the FileSystemManager
+ * containing the data required to perform the operation itself.
+ * It allows for easier inclusion of new operations and decouples those concepts from the manager scope.
+ * Operations may or may not need the fields given by the class,
+ * which situations are represented by the different constructors.
+ * */
 public abstract class Command {
 
     public final String filePath;
@@ -34,16 +40,5 @@ public abstract class Command {
         this.fileName = fileName;
         this.fileType = fileType;
         this.fileLength = fileLength;
-    }
-
-    @Override
-    public String toString(){
-        return String.format(
-            "path: %s\nname: %s\ntype: %s\nlength: %s",
-            filePath,
-            fileName,
-            fileType.toString(),
-            fileLength
-        );
     }
 }

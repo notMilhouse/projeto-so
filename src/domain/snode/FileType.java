@@ -1,5 +1,9 @@
 package src.domain.snode;
-  //enum dos FileTypes Ok 
+
+/**
+ * FileType is an enum containing all possible file types
+ * each filetype is associated with a byte value
+ * */
 public enum FileType {
     Unknown                     (Byte.parseByte("00000000", 2)),
     Regular                     (Byte.parseByte("00000001", 2)),
@@ -12,11 +16,20 @@ public enum FileType {
 
     private final byte fileType;
 
+    /**
+     * Constructs a FileType given a byte representing a file type
+     * is not public in order to ensure that file types via the parser methods
+     * */
     FileType(byte fileType) {
         this.fileType = fileType;
     }
 
-    public byte toByte() {
+  /**
+   * Serializes the data structure to an array of bytes that can be easily written to a disk, for example
+   *
+   * @return byte array
+   * */
+    public byte toBits() {
         return fileType;
     }
 
@@ -25,6 +38,11 @@ public enum FileType {
         return this.name();
     }
 
+    /**
+     * Parse a file type from a byte
+     * @param fileType is a byte representing a file type
+     * @return a FileType object that matches the given byte
+     * */
     public static FileType parseFileType(byte fileType) {
         return switch (fileType) {
             case 1 -> Regular;
@@ -37,6 +55,12 @@ public enum FileType {
             default -> Unknown;
         };
     }
+
+    /**
+     * Parse a file type from a String
+     * @param fileType the name of a file type
+     * @return a FileType object that matches the given byte
+     * */
     public static FileType parseFileType(String fileType) {
         return switch (fileType) {
             case "regular" -> Regular;
