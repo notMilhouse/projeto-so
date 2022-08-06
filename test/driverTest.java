@@ -42,11 +42,9 @@ public class driverTest {
         driver.WriteSNode(H, I, "I");
 
         ListAllFiles(root, "/");
-        driver.SaveDisk(disk);
+        driver.SaveDisk();
     }
 
-    static SNode I;
-    static SNodeDir H;
 
     private static void ListAllFiles(SNodeDir snode, String workDir)
     {
@@ -57,8 +55,6 @@ public class driverTest {
             if(snode.getDEntryAtIndex(i).getFileType() == FileType.Directory)
             {
                 ListAllFiles((SNodeDir)snode.getDEntryAtIndex(i).getSnode(), workDir + snode.getDEntryAtIndex(i).getFileName() + "/");
-                I = snode.getDEntryAtIndex(i).getSnode();
-                H = (SNodeDir)snode;
             }
         }
 
