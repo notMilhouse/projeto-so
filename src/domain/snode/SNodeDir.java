@@ -42,7 +42,7 @@ public class SNodeDir extends SNode {
 
 
     /**
-     * Remoção de um DEntry dentro do diretório 
+     * Removes DEntry from directory
      * @param index of the dentry
      * @throws VirtualFileNotFoundException when virtual file not found
      */
