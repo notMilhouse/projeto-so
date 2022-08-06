@@ -12,6 +12,6 @@ public class CommandInterfaceTest {
         new CommandInterface(
             new Scanner(System.in),
             new CommandParser()
-        ).run();
+        ).run("");
     }
 }

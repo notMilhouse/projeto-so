@@ -55,6 +55,9 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     public void run() throws Exception {
         diskDriver.MountDisk();
         root = (SNodeDir)diskDriver.GetRoot();
+
+        System.out.println(userInterface.manual());
+
         while (true) {
             try {
                 handleCommand(
@@ -129,6 +132,11 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         }
         else if (command instanceof ExitCommand) {
             System.exit(0);
+        }
+        else if (command instanceof HelpCommand) {
+            System.out.println(
+                userInterface.manual()
+            );
         }
     }
 

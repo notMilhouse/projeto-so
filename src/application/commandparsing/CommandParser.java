@@ -69,6 +69,8 @@ public class CommandParser {
                 return new ChangeDirCommand(
                     commandArguments[1]
                 );
+            case "help":
+                return new HelpCommand();
             default:
                 throw new CommandNotFoundException();
         }
