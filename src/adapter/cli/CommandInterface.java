@@ -1,6 +1,7 @@
 package src.adapter.cli;
 
 import src.application.commandparsing.CommandParser;
+import src.application.commandparsing.command.Command;
 import src.application.commandparsing.exception.CommandMissingArgumentsException;
 import src.application.commandparsing.exception.CommandNotFoundException;
 
@@ -21,14 +22,9 @@ public class CommandInterface {
         this.commandParser = commandParser;
         this.commandScanner = commandScanner;
     }
-    public void run() throws CommandMissingArgumentsException, CommandNotFoundException {
+    public Command run() throws CommandMissingArgumentsException, CommandNotFoundException {
         System.out.println("CLI teste");
-
-        while(true) {
-            System.out.print("#> ");
-            commandParser
-                .parseCommand(commandScanner.nextLine())
-                .execute();
-        }
+        System.out.print("#> ");
+        return commandParser.parseCommand(commandScanner.nextLine());
     }
 }

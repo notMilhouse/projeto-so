@@ -1,16 +1,40 @@
 package src.application.commandparsing.command;
 
-import src.application.management.FileSystemManager;
 import src.domain.snode.FileType;
+
+import java.io.File;
 
 public abstract class Command {
 
-    protected String filePath;
-    protected String fileName;
-    protected FileType fileType;
-    protected int fileLength;
+    public final String filePath;
+    public final String fileName;
+    public final FileType fileType;
+    public final int fileLength;
 
-    abstract public void execute();
+    protected Command() {
+        filePath = "";
+        fileName = "";
+        fileType = null;
+        fileLength = 0;
+    }
+    protected Command(String path) {
+        filePath = path;
+        fileName = "";
+        fileType = null;
+        fileLength = 0;
+    }
+
+    protected Command(
+        String filePath,
+        String fileName,
+        FileType fileType,
+        int fileLength
+    ) {
+        this.filePath = filePath;
+        this.fileName = fileName;
+        this.fileType = fileType;
+        this.fileLength = fileLength;
+    }
 
     @Override
     public String toString(){

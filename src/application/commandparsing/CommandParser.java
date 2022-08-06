@@ -43,7 +43,6 @@ public class CommandParser {
                 }
 
                 return new ParseCommandFileCommand(
-                    this,
                     commandArguments[1]
                 );
             case "exit":
@@ -51,7 +50,9 @@ public class CommandParser {
             case "saveDisk":
                 return new SaveCommand();
             case "listDirectory":
-                return new ListDirCommand();
+                return new ListDirCommand(
+                    commandArguments[1]
+                );
             default:
                 throw new CommandNotFoundException();
         }

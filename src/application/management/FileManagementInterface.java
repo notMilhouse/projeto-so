@@ -4,6 +4,8 @@ import src.application.management.exceptions.InvalidEntryException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.FileType;
 
+import java.io.FileNotFoundException;
+
 public interface FileManagementInterface{
 	
 	/**
