@@ -8,7 +8,10 @@ import src.application.management.exceptions.InvalidEntryException;
 import src.application.management.exceptions.InvalidSNodeException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.FileType;
+import src.domain.snode.SNode;
 import src.domain.snode.SNodeDir;
+import src.domain.snode.SNodeFile;
+import src.domain.snode.dentry.DEntry;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -91,53 +94,76 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     private SNodeDir searchDir(String pathname){
         SNodeDir dir = (SNodeDir) diskDriver.GetRoot();
 
-        String[] directorys = pathname.split("/");
+        String[] directories = pathname.split("/");
 
-        if(directorys.length == 1)  //o diretorio é o root. Isso considerando que pathname = " " ;
+        if(directories.length == 1)  //o diretorio é o root. Isso considerando que pathname = " " ;
             return dir;
 
         
         //agr precisamos pegar as referencias do Dentry do dir e buscar 
        
-        for (String actualDir : directorys) {
+        for (String actualDir : directories) {
             
             try{
 
-                dir =  (SNodeDir) dir.searchInDirectory(actualDir).getSNode();
+                dir = (SNodeDir) dir.searchInDirectory(actualDir).getSNode();
 
             } catch(Exception e){
 
-                System.out.println(e);
+                System.out.println(e.getMessage());
         
             }
 
         }
 
         return dir;
-
-        
     }
 
 
     @Override
     public boolean addDirectory(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException {
+        SNodeDir path = searchDir(pathname);
+        SNodeDir newDir = new SNodeDir();
+
+        diskDriver.WriteSNode(path, newDir, filename); //TODO change IOException to VirtualFileNotFoundException
 
         return false;
     }
 
     @Override
     public boolean addFile(String pathname, String filename, FileType type, int length) throws InvalidEntryException, VirtualFileNotFoundException {
+        SNodeDir path = searchDir(pathname);
+        SNodeFile newFile = new SNodeFile(
+            type,
+            length
+        );
+
+        diskDriver.WriteSNode(path, newFile, filename);
+
         return false;
     }
 
     @Override
     public boolean deleteFile(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException {
+        SNodeDir path = searchDir(pathname);
+        DEntry entry = path.searchInDirectory(filename);
+        SNode nodeToDelete = entry.getSNode();
+
+        diskDriver.DeleteSNode(path, nodeToDelete);
+
         return false;
     }
 
     @Override
     public String[] listDirectory(String pathname) throws InvalidEntryException, VirtualFileNotFoundException {
-        return new String[0];
+        SNodeDir path = searchDir(pathname);
+        String[] entries = new String[path.numberOfFilesInDir()];
+
+        for(int i = 0; i < path.numberOfFilesInDir(); i++)
+        {
+            entries[i] = ("/" + path.getDEntryAtIndex(i).getFileName());
+        }
+        return entries;
     }
 
     @Override
