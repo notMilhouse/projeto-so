@@ -105,6 +105,20 @@ public class BitMap {
     }
 
     /**
+     * peek bit value in bitmap
+     * 
+     * @param index bit index
+     * @return  Bit value
+     */
+    public int peek(int index)
+    {
+        int index_in_chunk = index % 8;
+        int current_chunk = (index / 8) % chunkAmount;
+
+        return bitMap[current_chunk][index_in_chunk];
+    }
+
+    /**
      * freeSlot() provides a way of unsetting a slot in the bitmap given an index
      * @param index an index in the bitmap
      * */
