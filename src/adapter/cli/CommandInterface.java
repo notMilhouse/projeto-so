@@ -35,8 +35,8 @@ public class CommandInterface {
      * by reading the next line available from the scanner and parsing it as a command
      * using the parser.
      * */
-    public Command run() throws CommandMissingArgumentsException, CommandNotFoundException {
-        System.out.print("#> ");
+    public Command run(String path) throws CommandMissingArgumentsException, CommandNotFoundException {
+        System.out.print(path + " #> ");
         return commandParser.parseCommand(commandScanner.nextLine());
     }
 }

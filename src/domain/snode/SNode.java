@@ -87,6 +87,26 @@ public abstract class SNode {
         return datablocksReferences;
     }
 
+    public byte getGeneration()
+    {
+        return generation;
+    }
+
+    public String getCreationDate()
+    {
+        return creationDate.toString();
+    }
+
+    public String getModificationDate()
+    {
+        return modificationDate.toString();
+    }
+
+    public int getLength()
+    {
+        return length;
+    }
+
     public abstract boolean InsertDEntry(DEntry dEntry)
         throws InvalidEntryException;
 

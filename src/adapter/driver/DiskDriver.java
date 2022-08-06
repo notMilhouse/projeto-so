@@ -12,6 +12,7 @@ import src.domain.snode.SNodeDir;
 import src.domain.snode.SNodeFile;
 import src.domain.snode.dentry.DEntry;
 import src.domain.snode.exceptions.InvalidLengthForSnodeException;
+import src.domain.snode.exceptions.InvalidSNodeException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,8 +60,9 @@ public class DiskDriver {
      * Configures a new disk given the driver instance attributes
      * by creating a root directory and writing to the beginning of the disk
      * It also configures the respective bitmaps.
+     * @throws InvalidSNodeException
      */
-    private void newDisk() throws BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidEntryException, IOException, InvalidLengthForSnodeException {
+    private void newDisk() throws BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidEntryException, IOException, InvalidLengthForSnodeException, InvalidSNodeException {
         SNodeBitmapPositionInDisk = 28 * NumberOfSnodes;                                                 //Snode [28]bytes
         DatablockBitmapPositionInDisk = SNodeBitmapPositionInDisk + NumberOfSnodes / 8 + NumberOfDatablocks * 128;    //Datablock 128 bytes
 
@@ -96,8 +98,9 @@ public class DiskDriver {
      * Mounts virtualDisk from the diskImage
      *
      * @throws IOException in case something unexpected goes wrong
+     * @throws InvalidSNodeException
      */
-    public void MountDisk() throws IOException, BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidEntryException, InvalidLengthForSnodeException {
+    public void MountDisk() throws IOException, BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidEntryException, InvalidLengthForSnodeException, InvalidSNodeException {
         try {
             SNodeBitmapPositionInDisk = 28 * NumberOfSnodes;                                                 //Snode [28]bytes
             DatablockBitmapPositionInDisk = SNodeBitmapPositionInDisk + NumberOfSnodes / 8 + NumberOfDatablocks * 128;    //Datablock 128 bytes
@@ -328,8 +331,9 @@ public class DiskDriver {
 
     /**
      * Given a position in the virtualDisk, parses a SNode object
+     * @throws InvalidSNodeException
      */
-    private SNode ParseSNode(int snodePositionInVirtualDisk) throws InvalidEntryException, IOException, InvalidLengthForSnodeException {
+    public SNode ParseSNode(int snodePositionInVirtualDisk) throws InvalidEntryException, IOException, InvalidLengthForSnodeException, InvalidSNodeException {
         /*
             Snode builder
             Type:               1 byte
@@ -342,6 +346,11 @@ public class DiskDriver {
             DataBlockRef3       2 bytes (unsigned)
             DataBlockRef4       2 bytes (unsigned)
         */
+        if(SNodeBitmap.peek(snodePositionInVirtualDisk/28) == 0)
+        {
+            throw new InvalidSNodeException("SNode not allocated in virtual disk");
+        }
+
         SNode snode;
 
         virtualDisk.seek(snodePositionInVirtualDisk);
@@ -398,9 +407,10 @@ public class DiskDriver {
 
     /**
      * Given a position in the virtualDisk, parses a DEntry object
+     * @throws InvalidSNodeException
      */
 
-    public DEntry ParseDEntry(int dentryPositionInVirtualDisk) throws IOException, InvalidEntryException, InvalidLengthForSnodeException {
+    public DEntry ParseDEntry(int dentryPositionInVirtualDisk) throws IOException, InvalidEntryException, InvalidLengthForSnodeException, InvalidSNodeException {
         /*
             DEntry Builder
             SNode Identifier:   2 bytes (unsigned)
@@ -428,4 +438,39 @@ public class DiskDriver {
         virtualDisk.seek(dentryPositionInVirtualDisk - 2 + EntryLength);   //Vai para o final do DEntry
         return dEntry;
     }
+
+    public int GetNumberOfSnodes()
+    {
+        return NumberOfSnodes;
+    }
+    public String GetDatablockBitmap()
+    {
+        String byteString = "";
+        for(byte b : DatablockBitmap.toBits())
+        {
+            String bitString = "";
+            bitString = String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
+            for(int i = 8; i < 0; i--)
+            {
+                byteString += bitString.charAt(i);
+            }
+        }
+        return byteString;
+    }
+
+    public String GetSNodeBitmap()
+    {
+        String byteString = "";
+        for(byte b : SNodeBitmap.toBits())
+        {
+            String bitString = "";
+            bitString = String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
+            for(int i = 8; i < 0; i--)
+            {
+                byteString += bitString.charAt(i);
+            }
+        }
+        return byteString;
+    }
+
 }
