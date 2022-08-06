@@ -1,6 +1,5 @@
 package src.domain.snode;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import src.domain.snode.dentry.exceptions.InvalidEntryException;
 import src.adapter.driver.exceptions.VirtualFileNotFoundException;
