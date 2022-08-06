@@ -65,6 +65,10 @@ public class CommandParser {
                 return new ListDirCommand(
                     commandArguments[1]
                 );
+            case "changeDirectory":
+                return new ChangeDirCommand(
+                    commandArguments[1]
+                );
             default:
                 throw new CommandNotFoundException();
         }

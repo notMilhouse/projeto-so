@@ -114,6 +114,11 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
                     command.filePath
                 )
             );
+        }
+        else if (command instanceof ChangeDirCommand) {
+            changeDirectory(
+                command.filePath
+            );
             
         }
         else if (command instanceof SaveCommand) {
@@ -138,10 +143,11 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     private SNodeDir searchDirectory(String pathname)
     throws VirtualFileNotFoundException
     {
-        if(pathname.equals("/"))  //o diretorio é o root. Isso considerando que pathname = "/" ;
+        if(pathname.equals("/") && workDir.equals(""))  //o diretorio é o root. Isso considerando que pathname = "/" ;
             return root;
 
-        pathname = workDir + pathname;
+        
+        pathname = workDir + pathname.replaceAll("^/+", "");
         String[] directories = pathname.replaceAll("^/+", "").split("/");
 
         return searchDirArray(root, directories);
@@ -196,6 +202,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         {
             workDir = workDir.replaceAll("/+$", "");
             workDir += pathname;
+            workDir += "/";
         }
     }
 

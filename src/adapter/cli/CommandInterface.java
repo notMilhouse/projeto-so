@@ -36,7 +36,7 @@ public class CommandInterface {
      * using the parser.
      * */
     public Command run(String path) throws CommandMissingArgumentsException, CommandNotFoundException {
-        System.out.print(path + " #> ");
+        System.out.print(path + "#> ");
         return commandParser.parseCommand(commandScanner.nextLine());
     }
 }
