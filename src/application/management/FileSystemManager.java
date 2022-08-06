@@ -83,9 +83,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
 
     @Override
     public boolean addDirectory(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException {
-        /*fileSystem.addDirectory(new SNodeDir(
-            //TODO
-        ));*/
+        diskDriver.
 
         return false;
     }
