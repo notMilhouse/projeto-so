@@ -4,12 +4,11 @@ import src.adapter.cli.CommandInterface;
 import src.adapter.driver.DiskConverter;
 import src.application.commandparsing.CommandParser;
 import src.application.commandparsing.command.*;
-import src.application.commandparsing.exception.CommandMissingArgumentsException;
-import src.application.commandparsing.exception.CommandNotFoundException;
 import src.application.management.exceptions.InvalidEntryException;
 import src.application.management.exceptions.InvalidSNodeException;
 import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.FileType;
+import src.domain.snode.SNodeDir;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -81,9 +80,47 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         }
     }
 
+
+
+    // public void WriteSNode(SNodeDir dir, SNode snode, String name)
+    // public boolean DeleteSNode(SNodeDir dir, SNode snode)
+    //public SNode GetRoot()
+    // public SNode ParseSNode(int atRef)
+    //   public DEntry ParseDir(int atRef)
+
+    private SNodeDir searchDir(String pathname){
+        SNodeDir dir = (SNodeDir) diskDriver.GetRoot();
+
+        String[] directorys = pathname.split("/");
+
+        if(directorys.length == 1)  //o diretorio é o root. Isso considerando que pathname = " " ;
+            return dir;
+
+        
+        //agr precisamos pegar as referencias do Dentry do dir e buscar 
+       
+        for (String actualDir : directorys) {
+            
+            try{
+
+                dir =  (SNodeDir) dir.searchInDirectory(actualDir).getSNode();
+
+            } catch(Exception e){
+
+                System.out.println(e);
+        
+            }
+
+        }
+
+        return dir;
+
+        
+    }
+
+
     @Override
     public boolean addDirectory(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException {
-        diskDriver.
 
         return false;
     }
@@ -155,4 +192,5 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     public String getDataBlockBitmap() {
         return null;
     }
+
 }

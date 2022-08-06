@@ -89,9 +89,6 @@ public class SNodeDir extends SNode {
         return -1; 
     }
 
-
-
-    
     /**
     *   Busca no diretorio por subdiretorios 
     * @param fileName

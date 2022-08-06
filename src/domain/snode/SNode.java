@@ -117,7 +117,7 @@ public abstract class SNode {
             8
         );
 
-        index += 8;
+        index = 10;
 
         byte[] modificationDateAsByteArray = ByteBuffer
             .allocate(8)
@@ -130,7 +130,7 @@ public abstract class SNode {
             8
         );
 
-        index += 8;
+        index = 18;
 
         byte[] lengthAsByteArray = ByteBuffer
             .allocate(2)
