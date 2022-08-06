@@ -30,54 +30,54 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         commandParser = parser;
     }
 
-    public void run() throws CommandMissingArgumentsException, CommandNotFoundException {
-        while(true){
-            handleCommand(
-                userInterface.run()
-            );
+    public void run() {
+        while (true) {
+            try {
+                handleCommand(
+                    userInterface.run()
+                );
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
         }
     }
 
-    private void handleCommand(Command command) {
-        try {
-            if(command instanceof AddFileCommand) {
-                addFile(
-                    command.filePath,
-                    command.fileName,
-                    command.fileType,
-                    command.fileLength
-                );
-            }
-            if(command instanceof AddDirectoryCommand) {
-                addDirectory(
-                    command.filePath,
-                    command.fileName
-                );
-            }
-            if(command instanceof DeleteInstanceCommand) {
-                deleteFile(
-                    command.filePath,
-                    command.fileName
-                );
-            }
-            if(command instanceof ListDirCommand) {
-                listDirectory(
-                    command.filePath
-                );
-            }
-            if(command instanceof ParseCommandFileCommand) {
-                parseCommandFile(
-                    command.filePath
-                );
-            }
-            if(command instanceof SaveCommand) {
-                saveVirtualDisk();
-            }
-            if(command instanceof ExitCommand) {
-                System.exit(0);
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+    private void handleCommand(Command command) throws VirtualFileNotFoundException, InvalidEntryException {
+        if (command instanceof AddFileCommand) {
+            addFile(
+                command.filePath,
+                command.fileName,
+                command.fileType,
+                command.fileLength
+            );
+        }
+        if (command instanceof AddDirectoryCommand) {
+            addDirectory(
+                command.filePath,
+                command.fileName
+            );
+        }
+        if (command instanceof DeleteInstanceCommand) {
+            deleteFile(
+                command.filePath,
+                command.fileName
+            );
+        }
+        if (command instanceof ListDirCommand) {
+            listDirectory(
+                command.filePath
+            );
+        }
+        if (command instanceof ParseCommandFileCommand) {
+            parseCommandFile(
+                command.filePath
+            );
+        }
+        if (command instanceof SaveCommand) {
+            saveVirtualDisk();
+        }
+        if (command instanceof ExitCommand) {
+            System.exit(0);
         }
     }
 
@@ -126,7 +126,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
             }
 
             return true;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
             return false;
         }
@@ -134,7 +134,13 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
 
     @Override
     public boolean saveVirtualDisk() {
-        return false;
+        try{
+            diskDriver.SaveDisk();
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
     }
 
     @Override
