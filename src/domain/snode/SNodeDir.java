@@ -97,7 +97,7 @@ public class SNodeDir extends SNode {
     public DEntry searchInDirectory(String fileName) throws VirtualFileNotFoundException{//TODO tratar excessão 
     
         for (DEntry dentry : DEntryList) {
-            if(dentry.getFileName() == fileName){
+            if(dentry.getFileName().equals(fileName)){
                 return dentry;
             }
         }

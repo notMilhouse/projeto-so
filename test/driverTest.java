@@ -4,13 +4,14 @@ import java.io.IOException;
 
 import src.adapter.driver.DiskConverter;
 import src.application.management.exceptions.InvalidEntryException;
+import src.application.management.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.FileType;
 import src.domain.snode.*;
 
 
 public class driverTest {
     public static void main(String[] args)
-    throws IOException, InvalidEntryException
+    throws IOException, InvalidEntryException, VirtualFileNotFoundException
     {
         int N = 16;
         int M = 24;
@@ -36,7 +37,7 @@ public class driverTest {
         driver.WriteSNode(root, B, "B");
         driver.WriteSNode(root, C, "C");
         driver.WriteSNode(C, E, "E");
-        driver.DeleteSNode(root, A);
+        System.out.println(driver.DeleteSNode(root, A));
         driver.WriteSNode(C, G, "G");
         driver.WriteSNode(G, H, "H");
         driver.WriteSNode(H, I, "I");
