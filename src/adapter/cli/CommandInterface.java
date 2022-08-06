@@ -36,7 +36,24 @@ public class CommandInterface {
      * using the parser.
      * */
     public Command run(String path) throws CommandMissingArgumentsException, CommandNotFoundException {
-        System.out.print(path + " #> ");
+        System.out.print(path + "#> ");
         return commandParser.parseCommand(commandScanner.nextLine());
+    }
+
+    public String manual() {
+        return """
+            --------------------------------------------------------------------------
+            Use guide for a simple File System Manager CLI
+            Available commands:
+            \t@ changeDirectory <directory> - Changes the current working directory
+            \t@ listDirectory <directory> - Lists the content in a given directory
+            \t@ addFile <directory> <filename> <filetype> <filesize> - Adds new file
+            \t@ addDir <directory> <dirname> - Adds new directory
+            \t@ delete <directory> <filename> - Deletes directory or file
+            \t@ parse <filepath> - Parses a command file
+            \t@ saveDisk - Saves disk state
+            \t@ exit - Exit the application
+            --------------------------------------------------------------------------
+            """;
     }
 }
