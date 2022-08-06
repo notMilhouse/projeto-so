@@ -60,7 +60,7 @@ public class DiskDriver {
      * by creating a root directory and writing to the beginning of the disk
      * It also configures the respective bitmaps.
      */
-    private void newDisk() throws BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidEntryException, IOException {
+    private void newDisk() throws BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidEntryException, IOException, InvalidLengthForSnodeException {
         SNodeBitmapPositionInDisk = 28 * NumberOfSnodes;                                                 //Snode [28]bytes
         DatablockBitmapPositionInDisk = SNodeBitmapPositionInDisk + NumberOfSnodes / 8 + NumberOfDatablocks * 128;    //Datablock 128 bytes
 
@@ -97,7 +97,7 @@ public class DiskDriver {
      *
      * @throws IOException in case something unexpected goes wrong
      */
-    public void MountDisk() throws IOException, BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidEntryException {
+    public void MountDisk() throws IOException, BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidEntryException, InvalidLengthForSnodeException {
         try {
             SNodeBitmapPositionInDisk = 28 * NumberOfSnodes;                                                 //Snode [28]bytes
             DatablockBitmapPositionInDisk = SNodeBitmapPositionInDisk + NumberOfSnodes / 8 + NumberOfDatablocks * 128;    //Datablock 128 bytes
@@ -114,7 +114,7 @@ public class DiskDriver {
             LoadBitmap();
 
             root = ParseSNode(0);
-        } catch (FileNotFoundException err) {
+        } catch (FileNotFoundException e) {
             System.out.println("Imagem não existente, criando novo disco...");
             newDisk();
         }
@@ -400,7 +400,7 @@ public class DiskDriver {
      * Given a position in the virtualDisk, parses a DEntry object
      */
 
-    public DEntry ParseDEntry(int dentryPositionInVirtualDisk) throws IOException, InvalidEntryException {
+    public DEntry ParseDEntry(int dentryPositionInVirtualDisk) throws IOException, InvalidEntryException, InvalidLengthForSnodeException {
         /*
             DEntry Builder
             SNode Identifier:   2 bytes (unsigned)
