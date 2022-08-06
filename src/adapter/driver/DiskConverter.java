@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class DiskConverter {
     File disk;
@@ -152,6 +153,7 @@ public class DiskConverter {
     public boolean WriteSNode(SNodeDir dir, SNode snode, String name)
     throws InvalidEntryException, VirtualFileNotFoundException
     {
+
         DEntry dentry = new DEntry(snode, snode.GetFileType(), name);
         int[] datablockSlots = new int[snode.GetNumberOfDatablocks()];
 
@@ -188,7 +190,6 @@ public class DiskConverter {
             return false; //TODO DEALLOCATE
         }
         snode.SetBitmap(snoderef, datablockSlots);
-
 
         //Updating bitmaps
         diskAccess.seek(SNodeBitmapRef);
@@ -235,6 +236,7 @@ public class DiskConverter {
     public boolean DeleteSNode(SNodeDir dir, SNode snode)
     throws VirtualFileNotFoundException
     {
+        
         if(snode.GetFileType() == FileType.Directory)
         {
             if(((SNodeDir)snode).numberOfFilesInDir() != 0)
@@ -275,6 +277,7 @@ public class DiskConverter {
             {
                 size = dentry.getLength();
                 dir.removeDEntry(i);
+                break;
             }
             offset += dentry.getLength();
         }
@@ -286,7 +289,7 @@ public class DiskConverter {
         diskAccess.seek(SNodeBitmapRef + NumberOfSnodes/8 + dir.getDatablocksReferences()[0]*128 + offset);
         diskAccess.write(datablockRemainder);
 
-        //Update size of directory
+        //Update directory
         diskAccess.seek(dir.getIndexInBitmap()*28);
         diskAccess.write(dir.toBits());
 

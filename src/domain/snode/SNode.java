@@ -3,7 +3,6 @@ package src.domain.snode;
 //import java.sql.Time;
 
 import src.application.management.exceptions.InvalidEntryException;
-import src.domain.bitmap.BitMap;
 import src.domain.snode.dentry.DEntry;
 
 import java.nio.ByteBuffer;
@@ -13,7 +12,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public abstract class SNode {
-    protected static BitMap bitMap; // BitMap é uma estrutura a parte do SNode
 
     protected FileType fileType;
     protected byte generation;

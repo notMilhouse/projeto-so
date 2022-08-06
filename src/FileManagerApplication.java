@@ -1,5 +1,6 @@
 package src;
 import src.application.management.FileSystemManager;
+import src.domain.disk.Disk;
 import src.application.commandparsing.CommandParser;
 
 import java.io.File;
@@ -16,14 +17,14 @@ public class FileManagerApplication {
             return;
         }
 
-        String disk = args[0];
         int numberOfSnodes = Integer.parseInt(args[1]);
         int numberOfDatablocks = Integer.parseInt(args[2]);
 
-        new FileSystemManager(new DiskConverter(new File(disk),
-                numberOfSnodes, 
-                numberOfDatablocks
-            ), 
+        File disk = new File(args[0]);
+
+        DiskConverter driver = new DiskConverter(disk, numberOfSnodes, numberOfDatablocks);
+
+        new FileSystemManager(driver, 
             new CommandInterface(new Scanner(System.in), new CommandParser()),
             new CommandParser()
         ).run();

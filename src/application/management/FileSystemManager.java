@@ -14,7 +14,6 @@ import src.domain.snode.SNodeFile;
 import src.domain.snode.dentry.DEntry;
 
 import java.io.FileInputStream;
-import java.nio.file.DirectoryIteratorException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -23,6 +22,9 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     private final DiskConverter diskDriver;
     private final CommandInterface userInterface;
     private final CommandParser commandParser;
+
+    private SNodeDir root;
+
 
     public FileSystemManager(
         DiskConverter converter,
@@ -35,9 +37,10 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     }
 
     public void run() {
+        diskDriver.Read();
+        root = (SNodeDir)diskDriver.GetRoot();
         while (true) {
             try {
-                diskDriver.Read();
                 handleCommand(
                     userInterface.run()
                 );
@@ -115,16 +118,14 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     private SNodeDir searchDir(String pathname)
     throws VirtualFileNotFoundException
     {
-        SNodeDir dir = (SNodeDir) diskDriver.GetRoot();
-
         if(pathname.equals("/"))  //o diretorio é o root. Isso considerando que pathname = "/" ;
-            return dir;
+            return root;
 
         
         String[] directories = pathname.replaceAll("^/+", "").split("/");
         
         //agr precisamos pegar as referencias do Dentry do dir e buscar 
-        return searchDirArray(dir, directories);
+        return searchDirArray(root, directories);
     }
 
     private SNodeDir searchDirArray(SNodeDir dir, String[] directories)
@@ -167,6 +168,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     @Override
     public boolean addFile(String pathname, String filename, FileType type, int length) throws InvalidEntryException, VirtualFileNotFoundException {
         SNodeDir path = searchDir(pathname);
+
         SNodeFile newFile = new SNodeFile(
             type,
             length
@@ -182,9 +184,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         DEntry entry = path.searchInDirectory(filename);
         SNode nodeToDelete = entry.getSNode();
 
-        diskDriver.DeleteSNode(path, nodeToDelete);
-
-        return false;
+        return diskDriver.DeleteSNode(path, nodeToDelete);
     }
 
     @Override
