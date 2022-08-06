@@ -118,7 +118,7 @@ public class DiskConverter
      * 
      * @throws IOException
      */
-    public void SaveDisk(File disk)
+    public void SaveDisk()
     throws IOException
     {
         _diskAccess = new RandomAccessFile(disk, "rw");

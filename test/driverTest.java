@@ -42,7 +42,7 @@ public class driverTest {
         driver.WriteSNode(H, I, "I");
 
         ListAllFiles(root, "/");
-        driver.SaveDisk(disk);
+        driver.SaveDisk();
     }
 
 
