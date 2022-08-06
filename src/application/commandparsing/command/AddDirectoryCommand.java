@@ -2,8 +2,10 @@ package src.application.commandparsing.command;
 
 import src.domain.snode.FileType;
 
-import java.io.File;
-
+/**
+ * AddDirectoryCommand represents the add directory file manager operation.
+ * It requires a file path and a file name, and use default values for the other fields.
+ * */
 public class AddDirectoryCommand extends Command{
 
     public AddDirectoryCommand(

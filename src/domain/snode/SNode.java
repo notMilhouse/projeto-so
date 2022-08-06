@@ -2,7 +2,7 @@ package src.domain.snode;
 
 //import java.sql.Time;
 
-import src.application.management.exceptions.InvalidEntryException;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
 import src.domain.snode.dentry.DEntry;
 
 import java.nio.ByteBuffer;
@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+/**
+ * SNode is a snode in the file system
+ * */
 public abstract class SNode {
 
     protected FileType fileType;
@@ -22,7 +25,7 @@ public abstract class SNode {
     protected int[] datablocksReferences;
 
     /**
-     * Criando Novo SNode
+     * Constructs a new SNode given its filetype and length
      */
     public SNode(FileType filetype, int length) {
         this.length = length;
@@ -32,27 +35,42 @@ public abstract class SNode {
         this.fileType = filetype;
     }
 
-    public void UpdateModificationDate() {
+    /**
+     * updates a snode modification date
+     * */
+    protected void UpdateModificationDate() {
         this.modificationDate = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
     }
 
+    /**
+     * Defines the snode bitmap current pointer and its associated data blocks references
+     * */
     public void SetBitmap(int snodeIndex, int[] dataBlocksIndexes) {
         indexInBitMap = snodeIndex;
         datablocksReferences = dataBlocksIndexes;
     }
 
+    /**
+     * @return the snode file type object
+     */
     public FileType GetFileType() {
         return fileType;
     }
 
+
     /**
-     * Carregando SNode
+     * Change the creation date of the snode when it is created
+     * @param time the time of the creation of the snode
      */
     public void ChangeCreationDate(long time) {
 
         creationDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
     }
 
+    /**
+     * Change the modification date of the snode
+     * @param time the time of the modification of the snode
+     */
     public void ChangeModificationDate(long time) {
         modificationDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
     }
@@ -69,21 +87,20 @@ public abstract class SNode {
         return datablocksReferences;
     }
 
-    //
-    public boolean InsertDEntry(DEntry dEntry)
-        throws InvalidEntryException {
-        return false;
-    }
+    public abstract boolean InsertDEntry(DEntry dEntry)
+        throws InvalidEntryException;
 
-    public byte[] DataBlockByIndex(int index) {
-        return null;
-    }
+    public abstract byte[] DataBlockByIndex(int index);
 
     public int GetNumberOfDatablocks() {
         return datablocksReferences.length;
     }
 
-    //
+    /**
+     * Serializes the data structure to an array of bytes that can be easily written to a disk, for example
+     *
+     * @return byte array
+     * */
     public byte[] toBits() {
         /*
             Snode builder
@@ -101,7 +118,7 @@ public abstract class SNode {
         byte[] snodeToBits = new byte[28];
         int index = 0;
 
-        snodeToBits[index++] = fileType.toByte();
+        snodeToBits[index++] = fileType.toBits();
         snodeToBits[index++] = generation;
 
         byte[] creationDateAsByteArray = ByteBuffer

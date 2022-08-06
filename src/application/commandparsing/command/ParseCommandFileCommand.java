@@ -1,11 +1,9 @@
 package src.application.commandparsing.command;
 
-import src.application.commandparsing.CommandParser;
-
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Scanner;
-
+/**
+ * ParseCommandFileCommand represents the parse file manager operation.
+ * It requires a file path containing the path to a command file.
+ * */
 public class ParseCommandFileCommand extends Command {
 
     public ParseCommandFileCommand(

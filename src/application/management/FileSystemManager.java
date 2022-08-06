@@ -1,12 +1,13 @@
 package src.application.management;
 
 import src.adapter.cli.CommandInterface;
-import src.adapter.driver.DiskConverter;
+import src.adapter.driver.DiskDriver;
 import src.application.commandparsing.CommandParser;
 import src.application.commandparsing.command.*;
-import src.application.management.exceptions.InvalidEntryException;
-import src.application.management.exceptions.InvalidSNodeException;
-import src.application.management.exceptions.VirtualFileNotFoundException;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
+import src.domain.snode.exceptions.InvalidLengthForSnodeException;
+import src.domain.snode.exceptions.InvalidSNodeException;
+import src.adapter.driver.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.FileType;
 import src.domain.snode.SNode;
 import src.domain.snode.SNodeDir;
@@ -18,16 +19,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+/**
+ * FileSystemManager is the kernel of the application.
+ * It represents the manager itself, being responsible for handling command and manipulating a virtual disk.
+ * */
 public class FileSystemManager implements FileManagementInterface, VirtualDiskInspectionInterface {
-    private final DiskConverter diskDriver;
+    private final DiskDriver diskDriver;
     private final CommandInterface userInterface;
     private final CommandParser commandParser;
 
     private SNodeDir root;
 
 
+    /**
+     * Constructs a manager given a disk driver, a command interface and a command parser
+     * Those fields, being defined in the constructor allow for customization of the manager and its
+     * further reuse.
+     * */
     public FileSystemManager(
-        DiskConverter converter,
+        DiskDriver converter,
         CommandInterface commandInterface,
         CommandParser parser
     ) {
@@ -36,8 +46,13 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         commandParser = parser;
     }
 
-    public void run() {
-        diskDriver.Read();
+    /**
+     * run() is the mounting point of the file system manager, it initializes its workflow
+     *
+     * @throws Exception to be handled by the application class
+     * */
+    public void run() throws Exception {
+        diskDriver.MountDisk();
         root = (SNodeDir)diskDriver.GetRoot();
         while (true) {
             try {
@@ -50,6 +65,11 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         }
     }
 
+    /**
+     * Given a command, executes the proper operation
+     *
+     * @param command is a Command object representing an operation and carrying its required data
+     * */
     private void handleCommand(Command command) throws VirtualFileNotFoundException, InvalidEntryException {
         if (command instanceof AddFileCommand) {
             System.out.println(
@@ -69,7 +89,6 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
                     command.fileName
                 )
             );
-            
         }
         else if (command instanceof DeleteInstanceCommand) {
             System.out.println(
@@ -107,27 +126,34 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
         }
     }
 
-
-
-    //public void WriteSNode(SNodeDir dir, SNode snode, String name)
-    //public boolean DeleteSNode(SNodeDir dir, SNode snode)
-    //public SNode GetRoot()
-    //public SNode ParseSNode(int atRef)
-    //public DEntry ParseDir(int atRef)
-
-    private SNodeDir searchDir(String pathname)
+    /**
+     * used for finding a directory in the disk
+     *
+     * @param pathname is a path for the wanted directory
+     * @return a SnodeDir object representing the directory
+     *
+     * @throws VirtualFileNotFoundException when virtual file is not found
+     * */
+    private SNodeDir searchDirectory(String pathname)
     throws VirtualFileNotFoundException
     {
         if(pathname.equals("/"))  //o diretorio é o root. Isso considerando que pathname = "/" ;
             return root;
 
-        
         String[] directories = pathname.replaceAll("^/+", "").split("/");
-        
-        //agr precisamos pegar as referencias do Dentry do dir e buscar 
+
         return searchDirArray(root, directories);
     }
 
+    /**
+     * Searches a directory by searching its path steps recursively
+     *
+     * @param dir is where you are searching for a directory
+     * @param directories is an array of directory names representing the subsequent steps in a previously given path
+     * @return a SnodeDir object representing the directory
+     *
+     * @throws VirtualFileNotFoundException when virtual file is not found
+     * */
     private SNodeDir searchDirArray(SNodeDir dir, String[] directories)
     throws VirtualFileNotFoundException
     {
@@ -136,18 +162,9 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
             try
             {
                 return (SNodeDir)dir.searchInDirectory(directories[0]).getSNode();
-            }
-            catch(VirtualFileNotFoundException err)
-            {
-                throw err;
-            }
-            catch(java.lang.ClassCastException err)
+            } catch(java.lang.ClassCastException err)
             {
                 throw new VirtualFileNotFoundException("'" + directories[0] + "' não é diretório");
-            }
-            catch(Exception err)
-            {
-                throw err;
             }
         }
         else
@@ -159,7 +176,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
 
     @Override
     public boolean addDirectory(String pathname, String filename) throws InvalidEntryException, VirtualFileNotFoundException {
-        SNodeDir path = searchDir(pathname);
+        SNodeDir path = searchDirectory(pathname);
         SNodeDir newDir = new SNodeDir();
 
         return diskDriver.WriteSNode(path, newDir, filename);
@@ -167,12 +184,18 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
 
     @Override
     public boolean addFile(String pathname, String filename, FileType type, int length) throws InvalidEntryException, VirtualFileNotFoundException {
-        SNodeDir path = searchDir(pathname);
+        SNodeDir path = searchDirectory(pathname);
 
-        SNodeFile newFile = new SNodeFile(
-            type,
-            length
-        );
+        SNodeFile newFile = null;
+        try {
+            newFile = new SNodeFile(
+                type,
+                length
+            );
+        } catch (InvalidLengthForSnodeException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
 
         return diskDriver.WriteSNode(path, newFile, filename);
     }
@@ -180,7 +203,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
     @Override
     public boolean deleteFile(String pathname, String filename) 
     throws InvalidEntryException, VirtualFileNotFoundException {
-        SNodeDir path = searchDir(pathname);
+        SNodeDir path = searchDirectory(pathname);
         DEntry entry = path.searchInDirectory(filename);
         SNode nodeToDelete = entry.getSNode();
 
@@ -189,7 +212,7 @@ public class FileSystemManager implements FileManagementInterface, VirtualDiskIn
 
     @Override
     public String[] listDirectory(String pathname) throws InvalidEntryException, VirtualFileNotFoundException {
-        SNodeDir path = searchDir(pathname);
+        SNodeDir path = searchDirectory(pathname);
         String[] entries = new String[path.numberOfFilesInDir()];
 
         for(int i = 0; i < path.numberOfFilesInDir(); i++)

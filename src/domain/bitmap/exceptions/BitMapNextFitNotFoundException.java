@@ -1,4 +1,4 @@
-package src.domain.bitmap;
+package src.domain.bitmap.exceptions;
 
 public class BitMapNextFitNotFoundException extends BitMapException{
     public BitMapNextFitNotFoundException() {

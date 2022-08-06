@@ -2,25 +2,27 @@ package test;
 import java.io.File;
 import java.io.IOException;
 
-import src.adapter.driver.DiskConverter;
-import src.application.management.exceptions.InvalidEntryException;
-import src.application.management.exceptions.VirtualFileNotFoundException;
+import src.adapter.driver.DiskDriver;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
+import src.adapter.driver.exceptions.VirtualFileNotFoundException;
+import src.domain.bitmap.exceptions.BitMapNextFitNotFoundException;
+import src.domain.bitmap.exceptions.BitMapPositionAlreadySetException;
 import src.domain.snode.FileType;
 import src.domain.snode.*;
+import src.domain.snode.exceptions.InvalidLengthForSnodeException;
 
 
 public class driverTest {
     public static void main(String[] args)
-    throws IOException, InvalidEntryException, VirtualFileNotFoundException
-    {
+        throws IOException, InvalidEntryException, VirtualFileNotFoundException, BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidLengthForSnodeException {
         int N = 16;
         int M = 24;
         File disk = new File("./testDisk.vdsk");
 
         
 
-        DiskConverter driver = new DiskConverter(disk, N, M);
-        driver.Read();
+        DiskDriver driver = new DiskDriver(disk, N, M);
+        driver.MountDisk();
 
 
         SNodeDir root = (SNodeDir)driver.GetRoot();

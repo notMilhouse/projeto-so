@@ -1,17 +1,25 @@
 package src;
 import src.application.management.FileSystemManager;
-import src.domain.disk.Disk;
 import src.application.commandparsing.CommandParser;
 
 import java.io.File;
 import java.util.Scanner;
 
-import src.adapter.driver.DiskConverter;
+import src.adapter.driver.DiskDriver;
 import src.adapter.cli.CommandInterface;
 
 public class FileManagerApplication {
-    public static void main(String[] args) {
 
+    /**
+     * The application flow is as follows:
+     * <ol>
+     *     <li>Application arguments are parsed</li>
+     *     <li>Define file manager information</li>
+     *     <li>Initializes the disk driver, the application parser and user interface </li>
+     *     <li>Instantiates the file manager and runs it</li>
+     * </ol>
+     * */
+    public static void main(String[] args) {
         if(args.length == 0 || args[0] == null || args[1] == null || args[2] == null) {
             System.out.println("Usage 'FileManagerApplication <disk path> <number of snodes> <number of datablocks>'");
             return;
@@ -21,12 +29,20 @@ public class FileManagerApplication {
         int numberOfDatablocks = Integer.parseInt(args[2]);
 
         File disk = new File(args[0]);
+        DiskDriver driver = new DiskDriver(disk, numberOfSnodes, numberOfDatablocks);
+        CommandParser applicationParser = new CommandParser();
+        CommandInterface userInterface = new CommandInterface(
+            new Scanner(System.in),
+            applicationParser);
 
-        DiskConverter driver = new DiskConverter(disk, numberOfSnodes, numberOfDatablocks);
 
-        new FileSystemManager(driver, 
-            new CommandInterface(new Scanner(System.in), new CommandParser()),
-            new CommandParser()
-        ).run();
+        try {
+            new FileSystemManager(driver,
+                userInterface,
+                applicationParser
+            ).run();
+        } catch(Exception ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }

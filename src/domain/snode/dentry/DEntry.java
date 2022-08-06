@@ -1,35 +1,41 @@
 package src.domain.snode.dentry;
 
-import src.application.management.exceptions.InvalidEntryException;
 import src.domain.snode.FileType;
 import src.domain.snode.SNode;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * DEntry represents an entry in a directory and contains its business rules
+ * */
 public class DEntry {
-    private final SNode sNode; //isso pode ser tanto um snode de diretorio como de arquivo
+    private final SNode sNode;
     private final FileType fileType;
     private final String fileName;
 
     private final int length;
 
-    public DEntry( SNode snode, FileType fileType, String fileName ) 
+    /**
+     * Constructs a DEntry from a snode, filetype and a filename
+     * @param snode is the snode to which the dentry refers to
+     * @param fileType is the type of the node
+     * @param fileName is the name of the entry
+     * */
+    public DEntry(SNode snode, FileType fileType, String fileName )
     throws InvalidEntryException
     {
         this.sNode = snode;
         this.fileType = fileType;
 
-        if(fileName.length()> 122){
+        if(fileName.length() > 122){
             throw new InvalidEntryException("Nome do arquivo maior que o estipulado");
-           //tratar a excesão 
         }
 
         this.fileName = fileName; 
 
         this.length = (6 + fileName.length()) + (16 - (6 + fileName.length())%16);
-        
-        //size será o tamanho da estrutura DEntry. O tamanho máximo do DEntry deve ser menor que 128 bytes
     }
 
     public SNode getSNode(){
@@ -54,6 +60,11 @@ public class DEntry {
         return sNode;
     }
 
+    /**
+     * Serializes the data structure to an array of bytes that can be easily written to a disk, for example
+     *
+     * @return byte array
+     * */
     public byte[] toBits()
     {
         /*
@@ -87,7 +98,7 @@ public class DEntry {
 
         index += 2;
 
-        dentryToBits[index++] = fileType.toByte();
+        dentryToBits[index++] = fileType.toBits();
         dentryToBits[index++] = (byte)fileName.length(); //? talvez isso precise de um allocate
 
         byte[] fileNameByteArray = fileName.getBytes(StandardCharsets.ISO_8859_1);

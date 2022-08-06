@@ -1,6 +1,13 @@
 package src.domain.bitmap;
 
 
+import src.domain.bitmap.exceptions.BitMapNextFitNotFoundException;
+import src.domain.bitmap.exceptions.BitMapPositionAlreadySetException;
+import src.domain.bitmap.exceptions.BitMapPositionAlreadyUnsetException;
+
+/**
+ * BitMap is a 2-dimensional array representing a map of bits
+ * */
 public class BitMap {
     private final byte[][] bitMap;
     private final int bitAmount;
@@ -16,6 +23,10 @@ public class BitMap {
         current_index = 0;
     }
 
+    /**
+     * Constructs a bitmap from a string representing a bitmap
+     * @param bits a string representing a bitmap
+     * */
     public BitMap(String bits) {
         String[] bitsArray = bits.replace(" ", "").split("");
 
@@ -44,14 +55,19 @@ public class BitMap {
     }
 
     /**
-     * retorna o arry de bytes que representa o bitmap
+     * Get the bitmap array that represents the bitmap data
      *
-     * @return vetor do BitMap
+     * @return a bitmap
      */
     public byte[][] getBitMap() {
         return bitMap;
     }
 
+    /**
+     * Serializes the data structure to an array of bytes that can be easily written to a disk, for example
+     *
+     * @return byte array
+     * */
     public byte[] toBits() {
         byte[] bits = new byte[chunkAmount];
 
@@ -66,21 +82,6 @@ public class BitMap {
             for (byte bit : chunk) {
                 chunk_sum += bit << offset++;
             }
-
-            /*
-            * 00000000
-            * 00000000
-            * 00000000
-            * 00000001
-            * 00000001
-            * 00000001
-            * 00000000
-            * 00000001
-            *
-            * 00011101
-            *
-            *
-            * */
 
             bits[index++] = chunk_sum;
         }
@@ -103,6 +104,10 @@ public class BitMap {
         return map.toString();
     }
 
+    /**
+     * freeSlot() provides a way of unsetting a slot in the bitmap given an index
+     * @param index an index in the bitmap
+     * */
     public void freeSlot(int index) {
         try {
             unsetBitAtPosition(index);
@@ -111,6 +116,11 @@ public class BitMap {
         }
     }
 
+
+    /**
+     * allocateSlot() provides a way of setting a slot in the bitmap given an index
+     * @return an index in the bitmap that has been set
+     * */
     public int allocateSlot() throws BitMapPositionAlreadySetException, BitMapNextFitNotFoundException {
         int index = findNextFit();
         setBitAtPosition(index);
@@ -118,17 +128,15 @@ public class BitMap {
         return index;
     }
 
-    // Find position by next fit
+    /**
+     * findNextFit() implements the next fit rule for finding an available position in the bitmap
+     * @return an index for an available position in the bitmap
+     * @throws BitMapNextFitNotFoundException if there is no position available
+     * */
     private int findNextFit() throws BitMapNextFitNotFoundException {
         int index_in_chunk, current_chunk;
 
         int index = current_index;
-
-        /*
-        * 00000000 00000000 00000000
-        *
-        *
-        * */
 
         do {
             index_in_chunk = index % 8;
@@ -146,7 +154,11 @@ public class BitMap {
         throw new BitMapNextFitNotFoundException();
     }
 
-    //next fit
+    /**
+     * sets (define as 1) a bitmap position
+     *
+     * @throws BitMapPositionAlreadySetException if the position is already set
+     * */
     private void setBitAtPosition(int position) throws BitMapPositionAlreadySetException {
         int index_in_chunk = position % 8;
         int current_chunk = (position / 8) % chunkAmount;
@@ -158,6 +170,11 @@ public class BitMap {
         bitMap[current_chunk][index_in_chunk] = 1;
     }
 
+    /**
+     * unsets (define as 0) a bitmap position
+     *
+     * @throws BitMapPositionAlreadyUnsetException if the position is already unset
+     * */
     private void unsetBitAtPosition(int position) throws BitMapPositionAlreadyUnsetException {
 
         int index_in_chunk = position % 8;
