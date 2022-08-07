@@ -287,7 +287,7 @@ public class DiskDriver {
 
         //Defragmentar o DEntry
         virtualDisk.seek(SNodeBitmapPositionInDisk + NumberOfSnodes / 8 + dir.getDatablocksReferences()[0] * 128 + offset + size);
-        byte[] datablockRemainder = new byte[128 - offset + size];
+        byte[] datablockRemainder = new byte[128 - (offset + size)];
         virtualDisk.readFully(datablockRemainder);
         virtualDisk.seek(SNodeBitmapPositionInDisk + NumberOfSnodes / 8 + dir.getDatablocksReferences()[0] * 128 + offset);
         virtualDisk.write(datablockRemainder);
