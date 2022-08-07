@@ -124,7 +124,7 @@ public class DiskDriver {
 
             root = ParseSNode(0);
         } catch (FileNotFoundException e) {
-            System.out.println("Imagem não existente, criando novo disco...");
+            System.out.println("Disk image does not exist, creating a new one...");
             newDisk();
         }
     }
