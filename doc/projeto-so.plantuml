@@ -1,0 +1,242 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AddDirectoryCommand
+class AddFileCommand
+class BitMap {
+  - bitMap: byte[][]
+  + allocateSlot(): int
+  - findNextFit(): int
+  - unsetBitAtPosition(int): void
+  + toBits(): byte[]
+  + freeSlot(int): void
+  + toString(): String
+  + peek(int): int
+   bitAtPosition: int
+   bitMap: byte[][]
+}
+class BitMapException
+class BitMapNextFitNotFoundException
+class BitMapPositionAlreadySetException
+class BitMapPositionAlreadyUnsetException
+class ChangeDirCommand
+class Command
+class CommandInterface {
+  + run(String): Command
+  + manual(): String
+}
+class CommandInterfaceTest {
+  + main(String[]): void
+}
+class CommandMissingArgumentsException
+class CommandNotFoundException
+class CommandParser {
+  + parseCommand(String): Command
+}
+class DEntry {
+  - length: int
+  - fileType: FileType
+  - fileName: String
+  + toBits(): byte[]
+   SNode: SNode
+   length: int
+   fileType: FileType
+   snode: SNode
+   fileName: String
+}
+class DeleteInstanceCommand
+class DiskDriver {
+  + GetRoot(): SNode
+  + GetSNodeBitmap(): String
+  + ParseSNode(int): SNode
+  - LoadBitmap(): void
+  + DeleteSNode(SNodeDir, SNode): boolean
+  + ParseDEntry(int): DEntry
+  + WriteSNode(SNodeDir, SNode, String): boolean
+  + MountDisk(): void
+  - newDisk(): void
+  + GetDatablockBitmap(): String
+  + SaveDisk(): void
+  + GetNumberOfSnodes(): int
+}
+class ExitCommand
+interface FileManagementInterface << interface >> {
+  + deleteFile(String, String): boolean
+  + addFile(String, String, FileType, int): boolean
+  + listDirectory(String): String[]
+  + parseCommandFile(String): boolean
+  + saveVirtualDisk(): boolean
+  + addDirectory(String, String): boolean
+}
+class FileManagerApplication {
+  + main(String[]): void
+}
+class FileSystemManager {
+  - searchDirArray(SNodeDir, String[]): SNodeDir
+  - handleCommand(Command): void
+  - searchDirectory(String): SNodeDir
+  + addDirectory(String, String): boolean
+  + parseCommandFile(String): boolean
+  + addFile(String, String, FileType, int): boolean
+  + getSNodeInfo(int): String
+  + deleteFile(String, String): boolean
+  + saveVirtualDisk(): boolean
+  + listDirectory(String): String[]
+  - changeDirectory(String): void
+  + run(): void
+   dataBlockBitmap: String
+   snodeBitmap: String
+}
+enum FileType << enumeration >> {
+  + toString(): String
+  + parseFileType(String): FileType
+  + valueOf(String): FileType
+  + toBits(): byte
+  + parseFileType(byte): FileType
+  + values(): FileType[]
+}
+class HelpCommand
+class InspectionTest {
+  + main(String[]): void
+}
+class InvalidEntryException
+class InvalidLengthForSnodeException
+class InvalidSNodeException
+class ListDirCommand
+class ParseCommandFileCommand
+class SNode {
+  # generation: byte
+  # creationDate: ZonedDateTime
+  # length: int
+  # datablocksReferences: int[]
+  # modificationDate: ZonedDateTime
+  + ChangeModificationDate(long): void
+  + GetNumberOfDatablocks(): int
+  + InsertDEntry(DEntry): boolean
+  + ChangeCreationDate(long): void
+  # UpdateModificationDate(): void
+  + DataBlockByIndex(int): byte[]
+  + SetBitmap(int, int[]): void
+  + ChangeGeneration(Byte): void
+  + toBits(): byte[]
+  + GetFileType(): FileType
+   datablocksReferences: int[]
+   generation: byte
+   length: int
+   modificationDate: String
+   indexInBitmap: int
+   creationDate: String
+}
+class SNodeDir {
+  + removeDEntry(int): void
+  + InsertDEntry(DEntry): boolean
+  + searchInDirectory(String): DEntry
+  + GetNumberOfDatablocks(): int
+  + getDEntryAtIndex(int): DEntry
+  + numberOfFilesInDir(): int
+  + DataBlockByIndex(int): byte[]
+}
+class SNodeFile {
+  + GetNumberOfDatablocks(): int
+  + DataBlockByIndex(int): byte[]
+  + InsertDEntry(DEntry): boolean
+}
+class SaveCommand
+class VirtualDisk {
+  - diskPointer: long
+  + GetByteArray(): byte[]
+  + readUnsignedByte(): int
+  + readShort(): short
+  + readUnsignedShort(): int
+  + readLong(): long
+  + write(byte[]): void
+  + readFully(byte[]): void
+  + readByte(): byte
+  + seek(long): void
+   diskPointer: long
+}
+interface VirtualDiskInspectionInterface << interface >> {
+  + getSNodeInfo(int): String
+   dataBlockBitmap: String
+   snodeBitmap: String
+}
+class VirtualFileNotFoundException
+class driverTest {
+  - ListAllFiles(SNodeDir, String): void
+  + main(String[]): void
+}
+
+AddDirectoryCommand                  -[#589df6,plain]-^  Command                             
+AddFileCommand                       -[#589df6,plain]-^  Command                             
+BitMap                               -[#bbbbbb,dashed]->  BitMapNextFitNotFoundException      : "«create»"
+BitMap                               -[#bbbbbb,dashed]->  BitMapPositionAlreadySetException   : "«create»"
+BitMap                               -[#bbbbbb,dashed]->  BitMapPositionAlreadyUnsetException : "«create»"
+BitMapNextFitNotFoundException       -[#589df6,plain]-^  BitMapException                     
+BitMapPositionAlreadySetException    -[#589df6,plain]-^  BitMapException                     
+BitMapPositionAlreadyUnsetException  -[#589df6,plain]-^  BitMapException                     
+ChangeDirCommand                     -[#589df6,plain]-^  Command                             
+Command                             "1" *-[#bbbbbb,plain]-> "fileType\n1" FileType                            
+CommandInterface                    "1" *-[#bbbbbb,plain]-> "commandParser\n1" CommandParser                       
+CommandInterfaceTest                 -[#bbbbbb,dashed]->  CommandInterface                    : "«create»"
+CommandInterfaceTest                 -[#bbbbbb,dashed]->  CommandParser                       : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  AddDirectoryCommand                 : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  AddFileCommand                      : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  ChangeDirCommand                    : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  CommandMissingArgumentsException    : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  CommandNotFoundException            : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  DeleteInstanceCommand               : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  ExitCommand                         : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  HelpCommand                         : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  ListDirCommand                      : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  ParseCommandFileCommand             : "«create»"
+CommandParser                        -[#bbbbbb,dashed]->  SaveCommand                         : "«create»"
+DEntry                              "1" *-[#bbbbbb,plain]-> "fileType\n1" FileType                            
+DEntry                               -[#bbbbbb,dashed]->  InvalidEntryException               : "«create»"
+DEntry                              "1" *-[#bbbbbb,plain]-> "sNode\n1" SNode                               
+DeleteInstanceCommand                -[#589df6,plain]-^  Command                             
+DiskDriver                          "1" *-[#bbbbbb,plain]-> "SNodeBitmap\n1" BitMap                              
+DiskDriver                           -[#bbbbbb,dashed]->  BitMap                              : "«create»"
+DiskDriver                           -[#bbbbbb,dashed]->  DEntry                              : "«create»"
+DiskDriver                           -[#bbbbbb,dashed]->  InvalidSNodeException               : "«create»"
+DiskDriver                          "1" *-[#bbbbbb,plain]-> "root\n1" SNode                               
+DiskDriver                           -[#bbbbbb,dashed]->  SNodeDir                            : "«create»"
+DiskDriver                           -[#bbbbbb,dashed]->  SNodeFile                           : "«create»"
+DiskDriver                          "1" *-[#bbbbbb,plain]-> "virtualDisk\n1" VirtualDisk                         
+DiskDriver                           -[#bbbbbb,dashed]->  VirtualDisk                         : "«create»"
+ExitCommand                          -[#589df6,plain]-^  Command                             
+FileManagerApplication               -[#bbbbbb,dashed]->  CommandInterface                    : "«create»"
+FileManagerApplication               -[#bbbbbb,dashed]->  CommandParser                       : "«create»"
+FileManagerApplication               -[#bbbbbb,dashed]->  DiskDriver                          : "«create»"
+FileManagerApplication               -[#bbbbbb,dashed]->  FileSystemManager                   : "«create»"
+FileSystemManager                   "1" *-[#bbbbbb,plain]-> "userInterface\n1" CommandInterface                    
+FileSystemManager                   "1" *-[#bbbbbb,plain]-> "commandParser\n1" CommandParser                       
+FileSystemManager                   "1" *-[#bbbbbb,plain]-> "diskDriver\n1" DiskDriver                          
+FileSystemManager                    -[#609350,dashed]-^  FileManagementInterface             
+FileSystemManager                    -[#bbbbbb,dashed]->  InvalidSNodeException               : "«create»"
+FileSystemManager                   "1" *-[#bbbbbb,plain]-> "root\n1" SNodeDir                            
+FileSystemManager                    -[#bbbbbb,dashed]->  SNodeDir                            : "«create»"
+FileSystemManager                    -[#bbbbbb,dashed]->  SNodeFile                           : "«create»"
+FileSystemManager                    -[#609350,dashed]-^  VirtualDiskInspectionInterface      
+FileSystemManager                    -[#bbbbbb,dashed]->  VirtualFileNotFoundException        : "«create»"
+HelpCommand                          -[#589df6,plain]-^  Command                             
+InspectionTest                       -[#bbbbbb,dashed]->  CommandInterface                    : "«create»"
+InspectionTest                       -[#bbbbbb,dashed]->  CommandParser                       : "«create»"
+InspectionTest                       -[#bbbbbb,dashed]->  DiskDriver                          : "«create»"
+InspectionTest                       -[#bbbbbb,dashed]->  FileSystemManager                   : "«create»"
+ListDirCommand                       -[#589df6,plain]-^  Command                             
+ParseCommandFileCommand              -[#589df6,plain]-^  Command                             
+SNode                               "1" *-[#bbbbbb,plain]-> "fileType\n1" FileType                            
+SNodeDir                            "1" *-[#bbbbbb,plain]-> "DEntryList\n*" DEntry                              
+SNodeDir                             -[#bbbbbb,dashed]->  InvalidEntryException               : "«create»"
+SNodeDir                             -[#589df6,plain]-^  SNode                               
+SNodeDir                             -[#bbbbbb,dashed]->  VirtualFileNotFoundException        : "«create»"
+SNodeFile                            -[#bbbbbb,dashed]->  InvalidLengthForSnodeException      : "«create»"
+SNodeFile                            -[#589df6,plain]-^  SNode                               
+SaveCommand                          -[#589df6,plain]-^  Command                             
+driverTest                           -[#bbbbbb,dashed]->  DiskDriver                          : "«create»"
+driverTest                           -[#bbbbbb,dashed]->  SNodeDir                            : "«create»"
+driverTest                           -[#bbbbbb,dashed]->  SNodeFile                           : "«create»"
+@enduml
