@@ -2,8 +2,8 @@ package src.domain.snode;
 
 //import java.sql.Time;
 
-import src.domain.snode.dentry.exceptions.InvalidEntryException;
 import src.domain.snode.dentry.DEntry;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;

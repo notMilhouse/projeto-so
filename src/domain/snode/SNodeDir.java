@@ -1,9 +1,10 @@
 package src.domain.snode;
-import java.util.ArrayList;
 
-import src.domain.snode.dentry.exceptions.InvalidEntryException;
 import src.adapter.driver.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.dentry.DEntry;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
+
+import java.util.ArrayList;
 
 
 public class SNodeDir extends SNode {

@@ -1,12 +1,12 @@
 package test;
 
-import java.io.File;
-import java.util.Scanner;
-
 import src.adapter.cli.CommandInterface;
 import src.adapter.driver.DiskDriver;
 import src.application.commandparsing.CommandParser;
 import src.application.management.FileSystemManager;
+
+import java.io.File;
+import java.util.Scanner;
 
 public class InspectionTest {
     public static void main(String[] args) throws Exception {

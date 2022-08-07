@@ -1,20 +1,16 @@
 package test;
-import java.io.File;
-import java.io.IOException;
 
 import src.adapter.driver.DiskDriver;
-import src.domain.snode.dentry.exceptions.InvalidEntryException;
-import src.adapter.driver.exceptions.VirtualFileNotFoundException;
-import src.domain.bitmap.exceptions.BitMapNextFitNotFoundException;
-import src.domain.bitmap.exceptions.BitMapPositionAlreadySetException;
 import src.domain.snode.FileType;
-import src.domain.snode.*;
-import src.domain.snode.exceptions.InvalidLengthForSnodeException;
+import src.domain.snode.SNodeDir;
+import src.domain.snode.SNodeFile;
+
+import java.io.File;
 
 
 public class driverTest {
     public static void main(String[] args)
-        throws IOException, InvalidEntryException, VirtualFileNotFoundException, BitMapPositionAlreadySetException, BitMapNextFitNotFoundException, InvalidLengthForSnodeException {
+        throws Exception {
         int N = 16;
         int M = 24;
         File disk = new File("./testDisk.vdsk");

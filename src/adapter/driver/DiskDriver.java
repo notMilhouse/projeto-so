@@ -1,16 +1,16 @@
 package src.adapter.driver;
 
-import src.domain.disk.VirtualDisk;
-import src.domain.snode.dentry.exceptions.InvalidEntryException;
 import src.adapter.driver.exceptions.VirtualFileNotFoundException;
 import src.domain.bitmap.BitMap;
 import src.domain.bitmap.exceptions.BitMapNextFitNotFoundException;
 import src.domain.bitmap.exceptions.BitMapPositionAlreadySetException;
+import src.domain.disk.VirtualDisk;
 import src.domain.snode.FileType;
 import src.domain.snode.SNode;
 import src.domain.snode.SNodeDir;
 import src.domain.snode.SNodeFile;
 import src.domain.snode.dentry.DEntry;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
 import src.domain.snode.exceptions.InvalidLengthForSnodeException;
 import src.domain.snode.exceptions.InvalidSNodeException;
 

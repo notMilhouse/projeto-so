@@ -1,8 +1,8 @@
 package src.application.management;
 
-import src.domain.snode.dentry.exceptions.InvalidEntryException;
 import src.adapter.driver.exceptions.VirtualFileNotFoundException;
 import src.domain.snode.FileType;
+import src.domain.snode.dentry.exceptions.InvalidEntryException;
 
 public interface FileManagementInterface{
 	

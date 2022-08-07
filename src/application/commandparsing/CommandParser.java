@@ -1,7 +1,8 @@
 package src.application.commandparsing;
 
 import src.application.commandparsing.command.*;
-import src.application.commandparsing.exception.*;
+import src.application.commandparsing.exception.CommandMissingArgumentsException;
+import src.application.commandparsing.exception.CommandNotFoundException;
 
 
 /**
