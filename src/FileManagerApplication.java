@@ -28,15 +28,18 @@ public class FileManagerApplication {
         int numberOfSnodes = Integer.parseInt(args[1]);
         int numberOfDatablocks = Integer.parseInt(args[2]);
 
-        File disk = new File(args[0]);
-        DiskDriver driver = new DiskDriver(disk, numberOfSnodes, numberOfDatablocks);
-        CommandParser applicationParser = new CommandParser();
-        CommandInterface userInterface = new CommandInterface(
-            new Scanner(System.in),
-            applicationParser);
+        
 
 
         try {
+            File disk = new File(args[0]);
+            DiskDriver driver = new DiskDriver(disk, numberOfSnodes, numberOfDatablocks);
+            CommandParser applicationParser = new CommandParser();
+            CommandInterface userInterface = new CommandInterface(
+                new Scanner(System.in),
+                    applicationParser
+                );
+
             new FileSystemManager(driver,
                 userInterface,
                 applicationParser
