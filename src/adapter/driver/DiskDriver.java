@@ -49,8 +49,14 @@ public class DiskDriver {
      * @param file               the file containing a source disk image
      * @param numberOfSnodes     the number of {@link SNode} for the disk
      * @param numberOfDatablocks the number of datablocks for the disk
+     * @throws Exception
      */
-    public DiskDriver(File file, int numberOfSnodes, int numberOfDatablocks) {
+    public DiskDriver(File file, int numberOfSnodes, int numberOfDatablocks) throws Exception {
+        if(numberOfSnodes%8 != 0 || numberOfDatablocks%8 != 0)
+        {
+            throw new Exception("Number of snodes and datablocks must be divisible by 8");
+        }
+
         diskImage = file;
         NumberOfSnodes = numberOfSnodes;
         NumberOfDatablocks = numberOfDatablocks;
@@ -450,7 +456,7 @@ public class DiskDriver {
         {
             String bitString = "";
             bitString = String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
-            for(int i = 8; i < 0; i--)
+            for(int i = 7; i >= 0; i--)
             {
                 byteString += bitString.charAt(i);
             }
@@ -465,7 +471,7 @@ public class DiskDriver {
         {
             String bitString = "";
             bitString = String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(" ", "0");
-            for(int i = 8; i < 0; i--)
+            for(int i = 7; i >= 0; i--)
             {
                 byteString += bitString.charAt(i);
             }
