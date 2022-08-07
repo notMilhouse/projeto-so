@@ -1,0 +1,16 @@
+src
+src.adapter.cli
+src.adapter.driver
+src.adapter.driver.exceptions
+src.application.commandparsing
+src.application.commandparsing.command
+src.application.commandparsing.exception
+src.application.management
+src.domain.bitmap
+src.domain.bitmap.exceptions
+src.domain.disk
+src.domain.snode
+src.domain.snode.dentry
+src.domain.snode.dentry.exceptions
+src.domain.snode.exceptions
+test
